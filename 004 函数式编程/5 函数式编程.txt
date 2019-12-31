@@ -1,0 +1,224 @@
+函数式编程：
+
+在计算机层次上，CPU执行的是加减乘除的指令代码，以及各种条件判断和跳转指令，所以，汇编语言是
+最贴近计算机的语言
+
+而计算则指数学意义上的计算，越是抽象的计算，离计算机硬件越远
+
+纯粹的函数式编程语言编写的函数没有变量，因此，任意一个函数，只要输入是确定的，输出就是确定的，
+这种纯函数我们称之为没有副作用。
+
+函数式编程的一个特点就是，允许把函数本身作为参数传入给另一个函数，还允许返回一个函数
+
+Python对函数式编程提供部分支持。由于Python允许使用变量，因此，Python不是纯函数式编程语言
+
+高阶函数：
+
+Higher-order function.
+
+变量可以指向函数
+
+函数名也是变量
+
+由于abs函数实际上是定义在import builtins 模块中的，所以要让修改abs变量的指向在其他模块也生效，
+要import builtins;bulitins.abs = 10
+
+传入函数
+
+变量可以指向函数，函数的参数可以接收变量
+
+def add(x, y, f):
+    return f(x) + f(y)
+
+map/reduce
+
+Python内建了map（）和reduce()函数
+
+map()接收两个参数，一个是函数，一个是可迭代对象。map将传入的函数依次作用到序列的每个元素，并把结果
+作为新的Iterator返回
+
+map()传入的第一个参数是f，即函数对象本身，由于结果r是一个Iterator，Iterator是惰性序列，
+
+L = []
+for n in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
+    L.append(f(n))
+print(L)
+
+list(map(str, [1, 2, 3, 4, 5, 6, 7, 8, 9]))
+
+
+reduce 把一个函数作用在一个序列
+
+两个参数， 把结果继续和序列的下一个元素做累积计算
+
+reduce(f, [1, 2, 3, 4])=f(f(f(1, 2), 3), 4)
+
+
+比如对一个序列求和
+
+from functools import reduce
+
+def add(x, y)
+    return x + y
+
+reduce(add, [1,2,3,4])
+
+def fn(x, y):
+    return 1
+
+如果要把序列[1, 3, 5, 7, 9] 变换成整数13579
+
+def f(x):
+    retur 10 * x + y
+
+r = reduce(f, [1, 3, 5, 7, 9])
+
+考虑到字符串也是一个序列，配合map，就可以写出把str转换为int的函数
+
+
+整理成一个str2int的函数就是：
+
+def str2int(s):
+    def fn(x, y):
+        return x * 10 + y
+    def char2num(s):
+        return digits[s]
+    return reduce(fn, map(char2num, s))
+
+filter
+
+filter()也接收一个函数和一个序列。和map()不同的是，filter把传入的函数依次作用于每个元素，然后
+根据返回值是True还是False决定保留还是丢弃该元素
+
+在list中，删掉偶数，只保留奇数
+
+def odd(x):
+    return x % 2 == 1
+
+list(filter(odd, [1, 2, 4, 5, 6, 9, 10, 15]))
+
+把一个序列中的空字符串删掉，可以这么写：
+
+def not_empty(s):
+    return s and s.strip()
+
+list(filter(not_empty, []))
+
+可见 用filter()这个高阶函数，关键在于正确实现一个筛选函数
+
+def _odd_iter():
+    n = 1
+    while True:
+	n = n + 2
+        yield n
+
+def _not_divisible(n):
+    return lambda x: x % n > 0
+
+def primes():
+    yield 2
+    it  = _odd_iter()   # 初始序列
+    while True:
+        n = next(it)    # 返回序列的第一个数
+        yield n
+        it = filter(_notdivisible(n), it)
+
+由于primes()也是一个无限序列，所以调用时需要设置一个退出循环的条件：
+
+# 打印1000以内的素数：
+for n in primes():
+    if n < 1000:
+	print(n)
+    else:
+        break
+
+sorted 也是一个高阶函数，可以接收一个key函数来实现自定义的排序，例如按绝对值大小排序
+
+
+对字符串排序，是按照ASCII的大小比较的，由于'Z'<'a'，结果，大写字母Z会排在小写字母a的前面
+
+
+返回函数
+
+实现一个可变参数求和
+
+def calc_sum(*args):
+    sum = 0
+    for n in args:
+        sum = sum + n
+    return sum
+
+def lazy_sum(*args):
+    def sum():
+        ax = 0
+        for n in args:
+	    ax = ax + n
+	return ax
+    return sum
+
+
+w我们在lazy_sum中又定义了函数sum，并且，内部函数sum可以引用外部函数lazy_sum的参数和局部变量，
+当lazy_sum返回函数sum时，相关参数和变量都保存在返回的函数中，这种叫闭包
+
+当我们调用lazy_sum()时，每次调用都会返回一个新的函数，即使传入相同的参数
+
+注意到 返回的函数在其定义内部引用了局部变量args，所以，当一个函数返回一个函数后，其内部的局部
+变量还被新函数引用
+
+返回函数并没有立刻执行，而是直到调用了f()才执行，
+
+def count():
+    fs = []
+    for i in range(1, 4):
+	def f():
+	    return i*i
+        fs.append(f)
+    return fs
+
+
+        
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

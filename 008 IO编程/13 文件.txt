@@ -1,0 +1,353 @@
+2-3 Python写入方式
+
+write(str): 将字符串写入文件
+writelines(sequence_of_strings)：写多行到文件，参数为可迭代的对象
+
+可迭代对象可以是：字符串、字符串组成的元组、字符串组成的迭代器、
+字符串组成的列表、
+
+例子：
+
+ls # 确认当前目录下没有任何文件
+
+>>> f = open('imooc.txt', 'w')
+>>> f.write('test write')
+>>> f.close()
+
+cat imooc.txt  # 查看刚才写入的内容是否写入
+-------------------------------------------------------
+>>> f = open('imooc.txt', 'w')   # 重新打开这个文件
+>>> f.writelines('123456')
+>>> f.writelines((1, 2, 3))
+报错， writelines的参数必须是一个字符串组成的序列
+
+>>> f.writelines(('1', '2', '3'))
+写入成功
+>>> f.writelines(['1', '2', '3'])
+写入成功
+>>> f.close()
+
+cat imooc.txt  # 查看刚才写入的内容
+-------------------------------------------------------
+>>> f = open('imooc.txt', 'w')   # 重新打开这个文件
+>>> f.write('111111111111111111')
+cat imooc.txt    # 显示没有内容
+
+问题：为什么已经调用了write函数，文件内容没有写进去？
+
+>>> f.close()
+
+cat imooc.txt
+
+# 证明Linux的写缓存机制，如果不主动调用close()或flush()，它是不会
+主动写到磁盘文件上的。
+
+然后就引出了Python写文件的过程： 那张图
+
+然后就带出了问题，写缓冲和磁盘上内容不一致的问题，解决如下：
+
+1. 主动调用close()或者flush方法，写缓存同步到磁盘
+2. 写入数据量大于或者等于写缓存，写缓存自动同步到磁盘
+
+例：
+-------------------------------------------------------
+>>> f = open('imooc.txt', 'w')   # 重新打开这个文件
+
+>>> f.write('test write')
+
+cat imooc.txt    # 这个时候还没写进去
+
+>>> f.flush()
+
+cat imooc.txt    # 证明已经写进去了
+
+>>> f.close()
+-------------------------------------------------------
+>>> f = open('imooc.txt', 'w')   # 重新打开这个文件
+
+>>> for i in range(10000):
+       f.write('test write' + str(i) + '\n')
+
+ls -l imoooc.txt  # 查看文件大小，说明已经写入了
+
+vi imooc.txt
+
+跳到文件最后，写到97978行，证明缓冲区就只有那么大， 根据文件的大小
+ls -l 看到缓冲区有155648个字节，
+
+剩余的还在缓存中，调用f.close()把缓冲区的内容也写到磁盘上
+
+再看一下这个文件，ls -l 看到文件大小为158890 比之前的大一些
+
+vi imooc.txt 打开文件证实一下，写到了1000行
+
+-------------------------------------------------------
+2-4 文件关闭
+
+Python文件为什么要关闭
+
+1. 将写缓存同步到磁盘
+2. linux系统中每个进程打开文件的个数是有限的
+3. 如果打开文件数到了系统限制，再打开文件就会失败
+
+
+例：
+
+
+-------------------------------------------------------
+3-1 文件属性编码格式
+
+文件对象属性
+
+标准文件
+
+文件命令行参数
+
+文件编码格式
+
+
+python文件属性
+
+file.fileno()：文件描述符
+file.mode：文件打开权限
+file.encoding：文件编码格 式
+file.closed：文件是否关闭
+
+例：
+-------------------------------------------------------
+>>> f = open('imooc.txt')   # 以只读方式打开这个文件
+
+f.fileno()
+
+f.mode   # 就是只读只写那些权限
+
+f.closed    # 返回布尔值
+
+f.encoding     # 没有结果 说明是个ASCII码文件
+
+Python标准文件：
+
+文件标准输入： sys.stdin
+文件标准输出： sys.stdout
+文件标准错误： sys.stderr
+
+>>> import sys
+>>> type(sys.stdin)
+>>> sys.stdin.(tab补齐)
+>>> sys.stdin.mode
+>>> sys.stdin.read()
+
+
+>>> sys.stdin.fileno()
+
+>>> a = raw_input(":")
+:00000000
+
+>>> sys.stdout.mode
+
+
+>>> sys.stdout.write('1000')
+
+>>> print('1111111') # 实际上调用的是sys.stdout
+
+>>> sys.stdout.fileno()
+
+>>> sys.stderr.mode
+
+>>> sys.stderr.write('10000')   # 也是打到屏幕上
+
+>>> sys.stderr.fileno()   # 意思就是我们打开一个stderr，就会打开三个
+2                         # 文件
+
+
+-------------------------------------------------------
+Python文件命令行参数
+
+我们执行程序，如果能根据参数不同完成不同功能，
+
+sys模块提供sys.argv属性，通过该属性可以得到命令行参数
+
+sys.argv：字符串组成的列表
+
+vi arg.py
+
+import sys
+if __name__ == '__main__':   # 入口函数
+    print(len(sys.argv))
+    for arg in sys.argv:
+	print(arg)
+
+python arg.py 0 1 2 3   # 获取命令行参数
+
+
+Python文件编码格式
+
+使用普通方式打开文件：写入u'慕课'，出现什么问题？
+
+f = open('imooc.txt', 'r+')
+
+问题：如何常见一个utf-8或者其他编码格式的文件
+
+使用codecs模块提供方法创建指定编码格式文件
+
+open(fname, mode, encoding, errors, buffering):
+使用指定编码格式打开文件
+
+import codecs
+
+help(codecs.open)
+
+
+f = codecs.open('text.txt', 'w', 'utf-8')
+f.encoding
+
+f.write(u'慕课')
+
+f.close()
+
+cat test.txt
+
+-------------------------------------------------------
+3-2 Linux文件系统简介
+
+文件包括：磁盘(ext2, ext4)文件，NFS文件系统，各种外设
+          (sd卡，USB设备)等
+
+Linux如何来管理外设，为应用层提供统一接口？
+
+参看Linux文件系统简单示意图
+
+-------------------------------------------------------
+3-3 OS模块对文件和目录操作
+
+使用os模块打开文件
+
+os.open(filename, flag [,mode])：打开文件
+mode 经常用系统的umask代替，所以一般关注第二个参数就行了
+
+flag: 打开文件方式
+    os.O_CREAT: 创建文件
+    os.O_RDONLY: 只读方式打开
+    os.O_WRONLY: 只写方式打开
+    os.O_RDWR:读写方式打开
+
+os.read(fd, buffersize)：读取文件
+
+os.write(fd, string): 写入文件
+
+os.lseek(fd, pos, how): 文件指针操作
+
+os.close(fd): 关闭文件
+
+fd = os.open('imooc.txt', os.O_CREAT | os.O_RDWR)
+
+ls -l
+
+umask
+
+n = os.write(fd, 'imooc')
+
+l = os.lseek(fd, 0, os.SEEK_SET)
+
+l
+
+str1 = os.read(fd, 5)
+
+str1
+
+os.close(fd)
+------------------------------------
+os模块方法介绍
+
+os方法	 	           说明
+access(path, mode)      判断该文件权限：F_OK存在
+                        权限：R_OK, W_OK, X_OK
+listdir(path)	        返回当前目录下所有文件组成的列表
+remove(path)	        删除文件
+rename(old, new)	修改文件或者目录名
+mkdir(path [, mode])	创建目录
+makedirs(path[, mode])  创建多级目录
+removedirs(path)
+----------------------------------------------------
+4-1 Python文件练习
+
+练习内容：
+    使用Python管理ini文件：实现查询，添加，删除，保存
+练习目的：
+    1. 掌握文件基本操作
+    2. 认识ini文件（ini是配置文件）
+    3. 了解ConfigParser
+
+ini配置文件格式：
+节：    [session]
+参数(键=值)    name=value
+
+例子：[port]
+         port1 = 8000
+         port2 = 8001
+
+>>> import ConfigParser
+>>> dir(ConfigParser)
+>>> cfg = ConfigParser.ConfigParser()
+>>> dir(cfg)
+>>> help(cfg.read)
+
+cat imooc.txt
+[userinfo]
+name = zhangsan
+pwd = abc
+
+[study]
+python_base = 15
+python_junior = 20
+linux_base_ = 15
+
+>>> cfg.read('imooc.txt')
+>>> help(cfg.sections)
+>>> cfg.sections()
+>>> help(cfg.items)
+>>> for se in cfg.sections():
+        print(se)
+        print(cfg.items(se))
+>>> cfg.set('userinfo', ('pwd', '1234567'))
+>>> cfg.set('userinfo', 'email', 'userimooc.com')
+
+>>> cfg.remove   # 删除选项
+>>> cfg.remove_option('userinfo', 'email')
+然后再次查看
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

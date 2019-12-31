@@ -1,0 +1,621 @@
+绑定一个方法：
+
+def set_age(self, age):
+    self.age = age
+
+from types import MethodType
+s.set_age = MethodType(set_age, s) # 给实例绑定一个方法
+s.set_age(25)  # 调用实例方法
+s.age    # 测试结果
+
+给class绑定方法
+
+Student.set_score = set_score
+
+
+动态绑定允许我们在程序运行的过程中动态给class加上功能，这在静态语言中很难实现
+
+
+为了达到限制的目的，Python允许在定义class的时候，定义一个特殊的__slots__变量
+--------------------------------------------
+我们在这里谈到的面向对象，全称叫Object Oriented Programming，简称OOP，是目前在程序开发里应用的最主流的
+一种编程思想。它把对象作为程序的基本单元，把一些数据和
+功能封装在里面，能够实现很好的复用性，灵活性和扩展性
+
+首先是Python面向对象的理论基础，然后用Python实现一些
+面向对象的基本特性，最后谈谈深入的Python面向对象的知识
+
+--------------------------------------------------
+2-1  Python 面向对象概念
+
+首先，什么是面向对象
+
+面向对抽象是一种抽象， 然后解释 象的含义
+
+抽象能带给我们什么好处
+
+面向对象的两个基本概念
+类：
+对象：
+
+例子：程序员
+程序员本身就指的是一个类，把现实生活中的一个群体进行了
+总结和抽象，而每一个个体都是属于程序员这个类的对象，
+
+面向对象的基本要素：
+属性
+方法
+
+有一个程序员的类，需要存储一些相应的信息，这些信息就是
+类的属性，比如，程序员的年龄。性别和身高，还有一些功能，
+写代码，修电脑。属性和功能组成了一个类。
+
+在方法这里，首先提到了封装性。
+
+下面讲了第二个类的特性：继承
+
+程序员：
+  前端程序员
+  后端程序员
+    PHP程序员，
+    Java程序员
+    Python程序员
+
+更细的分类是从属于父类的
+
+一样事物在
+
+多重继承：
+
+
+
+第三个特性：
+用同一个类
+
+bestLanguage() 重写出父类
+
+--------------------------------------------
+3-1 用Python定义类
+
+定义类
+
+class ClassName:
+    statement1
+    ...
+    statementN
+
+这里要注意，class关键字第一个字母不大写，类名称的写法
+
+构造函数：当我们新建一个类的时候，需要对类的一些属性
+进行设置
+
+def __init__(self, [...):
+
+与构造函数相对应的是析构函数
+
+
+历史遗留问题：老式类和新式类的区别
+
+两个内建函数
+type()
+dir()
+--------------------------------------------
+3-2 定义类的属性
+
+直接在类里定义：
+
+class Prog
+
+所有类的对象都是一样的
+
+在构造函数里定义
+
+在构造
+
+访问控制？
+比如Java，对类有访问控制
+
+其实没有反问控制
+Python没有提供私有属性的功能
+
+
+常用属性定义
+
+class Programmer(object):
+    def __init__(self, name, age, weight):
+        self.name = name
+        self._age = age
+
+
+__dict__代表从构造函数中获得的属性
+--------------------------------------------
+3-3 定义类的方法
+
+函数和方法：
+
+函数是直接用函数名调用的
+方法是类的一部分
+
+类的方法也是类的属性
+
+>>> class Test()
+
+方法的访问控制
+跟属性一样，也是基本没有
+
+常用的方法定义：
+
+两个关于方法的装饰器
+
+@classmethod:调用的时候用类名，而不是某个对象
+
+@property:像访问属性一样调用方法
+
+--------------------------------------------
+3-4 类的继承
+
+继承的子类：
+    会继承父类的属性和方法
+    也可以自己定义，覆盖父类的属性和方法
+
+在重写父类的时候，有时候需要调用父类里的方法--> 使用
+super()
+
+class A:
+    def method(self, arg):
+        pass
+
+class B(A):
+    def method(self, arg):
+        super(B, self).method(arg)
+
+--> 也可以用一种更为原始的，直接用父类名称调用方法
+
+class B(A):
+    def method(self, arg):
+        A.method(arg)
+
+但是这种方法没有体现出来类的继承关系
+
+子类的类型判断
+
+isinstance-->用来判断类型
+issubclass--> 判断父类
+
+多继承
+
+class DerivedClassName(Base1, Base2, Base3):
+
+
+class Programmer:
+
+class BackendProgrammer:
+
+    def __init__(self, name, age, weight, language):
+        super(BackendProgrammer, self).__init__(name, age, weight)
+        self.language = language
+
+--------------------------------------------
+3-4 类的多态
+
+多态是啥。。。
+
+程序员，做同一件事情的时候，会有不同的流程和反馈
+
+多态的要素：继承
+
+方法重写：正是因为
+
+class BackendProgrammer(Programmer):
+
+
+    def self_introduction(self):
+
+
+def introduce(p)
+--------------------------------------------
+4-1 magic method
+
+1) 魔术方法是什么
+    是关于Python面向对象的一整套方法，涉及到对象的方方面面，从对象的建立
+属性访问，到对运算符的支持，对一些特殊语法的支持等等。利用魔术方法我们可以
+以极大的自由度来定制我们的类
+
+2）魔术方法的作用
+    给类添加魔法
+
+3）魔术方法长什么样
+
+    方法名的前后有两个下划线:比如构造函数，析构函数 就是魔术方法。
+    def __init__(self):
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~
+官方参考手册的介绍：
+
+A class can implement certain operations that are invoked by special
+syntax (such as arithmatic operations or subscripting and slicing) by
+defining methods with special names. This is Python's approach to
+operator overloading, allowing classes to define their own behavior with
+respect to language operators. For instance, if a class defines a method
+named __getitem__(), and x is an instance of this class, then x[i] is
+roughly equivalent to type(x).__getitem__(x, i). Except where mentioned,
+attempts to execute an operation raise an exception when no appropriate
+method is defined(typically AttributeError or TypeError)
+
+Setting a special method to None indicates that the corresponding operation
+is not available. For example, if a class sets __iter__() to None, the class
+is not iterable, so calling iter() on its instances will raise a TypeError
+(without falling back to __getitem__())
+
+When implementing a class that emulates any built-in type, it is important
+that the emulation only be implemented to the degree that it makes sense
+for the object being modelled. For example, some sequences may work well with
+retrieval of individual elements, but extracting a slice may not make
+sense.(One example of this is the NodeList interface in the W3C's Document Object Model.)
+
+~~~~~~~~~~~~~~~
+廖雪峰的介绍
+
+看到类似__slots__这种形如__xxx__的变量或者函数名就要注意，这些在Python中是有
+特殊用途的。
+
+__slots__我们已经知道怎么用了，__len__()方法我们也知道是为了能让class作用于
+len()函数
+
+除此之外，Python的class中还有许多这样有特殊用途的函数，可以帮助我们定制类。
+
+
+--------------------------------------------
+4-2 对象的创建和初始化
+
+首先，一般平时定义类的过程：
+
+class Person(object):
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+person = Person('Albert', 25)
+
+一般定义类的方式是：在类中定义__init__方法，作为
+类的构造函数，它也是我们定义类的最常用模式，在
+__init__中会对对象的属性进行设置，然后在实例化对
+象的时候，往构造函数里传入相应的参数，就可以了。
+
+但是实际上，一个对象实例化的过程 在这里是没有完全展现出来的，
+真正的过程实际上是分成了两步，首先是创建一个类的对象，
+然后再进行对象的初始化
+
+创建类的对象 def __new__(cls)
+初始化对象  def __init__(self)
+
+在日常情况下我们并不用去定义__new__这个魔术方法因为
+我们继承了父类，由父类的__new__方法来帮我们完成了这
+些事情。__new__是在__init__之前调用的，它做的事情是
+返回一个类的初始对象，如果有比较特殊的需求，可以考虑
+重写__new__方法，但需要注意的是__new__方法是要返回一个
+对象的
+
+
+回收对象 __del__()
+
+Python有垃圾回收机制，并不需要我们手动地回收内存，当一个对象被Python的垃圾
+回收机制回收时，就会调用__del__方法，在实际中很少用到，一般垃圾回收机制是不
+需要我们进行修改的，在实际应用中我们一般写__init__方法就好了
+
+下例中没有演示__del__是因为这个方法是由Python的回收机制来调用的，这个过程
+我们本身在这里是不可控的。
+
+class Programmer:
+
+    def __new__(cls, *args, **kwargs):
+        print('call __new__ method')
+        print(args)
+        return super(Programmer, cls).__new__(cls, *args, **kwargs)
+
+    def __init__(self, name, age):
+        print('call __init__ method')
+        self.name = name
+        self.age = age
+
+if __name__ == '__main__':
+    programmer = Programmer('Albert', 25)
+    print(programmer.__dict__)
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+官方参考手册的说明
+
+object.__new__(cls[,...])
+
+    Called to create a new instance of class cls. __new__() is a static
+method(special-cased so you need not declare it as such) that takes the
+class of which an instance was requested as its first argument. The 
+remaining arguments are those passed to the object constructor expression
+(the call to the class). The return value of __new__() should be the new
+object instance(usually an instance of cls).
+
+Typical implementations create a new instance of the class by invoking the
+superclass's __new__() method using super().__new(cls[, ...]) with appropriate
+arguments and then modifying the newly-created instance as necessary before 
+returning it.
+
+if __new__() returns an instance of cls, then the new instance's __init__()
+method will be invoked like __init(self[,...]), where self is the new
+instance and the remaining arguments are the same as were passed to __new__()
+
+if __new__() does not return an instance of cls, then the new instance's
+__init__() method will not be invoked.
+
+__new__() is intended mainly to allow subclasses of immutable types(like int, 
+str, or tuple) to customize instance creation.It is also commonly
+overridden in custom metaclasses in order to customize class creation.
+
+object.__init__(self[,...])
+
+Called after the instance has been created (by __new__()), but before it
+is returned to the caller. The arguments are those passed to the class
+constructor expression. If a base class has an __init__() method, the
+derived class's __init__() method, if any, must explicitly call it to
+ensure proper initialization of the base class part of the instance; for
+example: super().__init__([args...])
+
+--------------------------------------------
+4-3 类与运算符
+
+有时候定义类需要进行一些运算符的计算，比如比大小，
+加减乘除，如果没有魔术方法，就需要另外定义方法来
+完成这些内容，但是在python里面有强大的魔术方法的帮助
+可以让我们的类能够使他们的运算符计算得到python基础
+语法的支持，是一种非常优美的解决方案
+
+举例子：来说明一个对象为什么能够支持运算符
+
+>>> s = 'test'
+>>> s == s
+True
+>>> dir(s)
+['__add__'， '__class__'. '__contains__', '__delattr',
+'__doc__', '__eq__']
+
+正是因为字符串对象里有__eq__这个方法，使得他能够判断
+与另一个对象是否相等。同理，如果想让你的类支持其他
+运算符，也会有相应的魔术方法
+
+主要的运算符分为三类：
+
+比较运算符
+__cmp__(self, other)：
+包含了两个对象相比较的所有情况，比如大小，大于，小于
+大于等于，等等
+
+__eq__(self, other)
+__lt__(self, other)
+__gt__(self, other)
+
+
+数字运算符
+
+__add__(self, other)
+__sub__(self, other)
+__mul__(self, other)
+__div__(self, other)
+
+逻辑运算符
+__or__(self, other)
+__and__(self, other)
+
+class Programmer:
+
+    def __init__(self, name, age):
+        self.name = name
+        if isinstance(age, int):
+            self.age = age
+        else:
+            raise Exception('age must be int')
+
+    def __eq__(self, other):
+        if isinstance(other, Programmer):
+            if self.age == other.age:
+                return True
+            else:
+                return False
+        else:
+            raise Exception('the type of object must be Programmer')
+
+    def __add__(self, other):
+        if isinstance(other, Programmer):
+            return self.age + other.age
+        else:
+            raise Exception('the type of object must be Programmer')
+
+if __name__ == '__main__':
+    p1 = Programmer('Albert', 25)
+    p2 = Programmer('Bill', 30)
+    print(p1 == p2)
+    print(p1 + p2)
+
+--------------------------------------------
+4-4 类的展现
+
+有时候我们定义了一个类，并且实例化一个对象之后，
+可以用print方法把它打出来，是因为在print的过程中
+把对象转换成了一个字符串，
+
+在python的内建方法中一共有三个方法可以把对象转换
+成字符串
+
+__str__
+__repr__
+__unicode__
+
+一个对象如果能够被相应的方法转换成字符串，那么在类
+里面定义或从父类继承了相应的魔术方法
+
+str和unicode是在python中两种不同的对象，而repr和str的
+区别是在于：__repr__目的是把对象转换成适合机器看的字符串，而__str__是把对象转换成适合人看的字符串
+
+那怎么来理解两者的区别呢：
+在python中有一个内置的方法，eval,它的作用是把一段字符串
+作为python代码来运行，一个对象由__repr__转换成的字符串
+是可以由eval这个函数来直接作为python代码运行的，而__str__转换出来的字符串就不行
+
+Help on built-in function eval in module builtins:
+
+eval(source, globals=None, locals=None, /)
+    Evaluate the given source in the context of globals
+    and locals.
+
+    The source may be a string representing a Python
+    expression or a code object as returned by compile(). 
+    The globals must be a dictionary and locals can be any 
+    mapping, defaulting to the current globals and locals. 
+    If only globals is given, locals defaults to it.
+
+展现对象的属性
+
+在python中有一个内建方法dir()查看对象属性，与之对应的，
+对象里面就有一个__dir__来控制调用dir()的结果。
+
+有时候我们可能有一些特殊的需求，不想把所有属性都暴露出来，那我们就可以自己定义__dir__这个魔术方法
+
+
+class Programmer:
+
+    def __init__(self, name, age):
+        self.name = name
+        if isinstance(age, int):
+            self.age = age
+        else:
+            raise Exception('age must be int')
+
+    def __str__(self):
+        return '%s is %s years old' % (self.name, self.age)
+
+    def __dir__(self):
+        return self.__dict__.keys()
+
+if __name__ == '__main__':
+    p = Programmer('Albert', 25)
+    print(p)
+    print dir(p)
+
+--------------------------------------------
+4-5 类的属性控制
+
+在前面介绍类的属性的时候，讲过，Python的类本身并没有真正的访问控制的机制，
+如果在类里面定义了用两个下划线开头的属性，它把在处理的时候仅仅是属性改了个名字，
+并不会阻止你去访问它，但是通过魔术方法可以给类的属性添加我们想要的访问控制
+
+现在就来说说跟对象属性有关的魔术方法
+
+设置对象属性
+
+__setattr__(self, name, value):
+
+也就是说我们在给对象设置属性的时候，它实际上是调用到
+这个类的__setattr__()方法。这个方法在平时是不需要定义的，
+因为会调用从父类继承的方法
+
+不过在使用__setattr__包括其他跟属性有关的魔术方法的时候，有一个特别需要注意的一点。
+一旦让你代码写出无限递归, 有这种可能性
+
+# 使用python内建函数
+def __setattr__(self, name, value):
+    setattr(self, name, value)
+
+# 使用python的__dict__属性
+def __setattr__(self, name, value):
+    self.__dict__[name] = value
+
+第一种方式是错误的,在设置属性的时候如果又调用了python内建的setattr()，它实际上会导致
+它在给self对象设置属性的时候又调回它自己，导致无限循环递归，Python里对递归数量有限制，
+默认情况下是1000次，超过就会报错
+如果换一种方式来设置对象属性，这样就不会导致无限循环递归的情况
+
+
+查询对象属性
+__getattr__(self, name)
+__getattribute__(self, name)
+
+二者作用稍有不同，__getattr__会在你想要访问的属性在默认情况下没有被查询到的情况下，就会调用__getattr__
+
+而__getattribute__在每次都访问属性的时候会被调用到，这就是二者的区别
+
+在使用__getattribute__的时候更容易引起无限递归，所以使用的时候要非常小心。
+
+
+删除对象属性
+也就是我们在用python内建的del()来删除某个对象属性的时候调用的，跟之前的设置比较类似
+
+__delattr__(self, name):
+
+
+class Programmer:
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def __getattribute__(self, name):
+        # return getattr(self, name)
+        # return self.__dict__[name]
+        # 使用__dict__获取属性值的时候失败，
+        # 说明也会调用__getattribute__方法
+        # 只有使用父类的__getattribute__方法才不会
+        # 出现无限递归的情况
+        return super(Programmer, self).__getattribute__(name)
+
+    def __setattr__(self, name, value):
+        # setattr(self, name, value)
+        self.__dict__[name] = value
+
+
+if __name__ == '__main__':
+    p = Programmer('Albert', 25)
+    print(p.name)
+
+--------------------------------------------
+5-1 课程总结
+
+面向对象理论
+
+类和对象
+    类是对一类事物的抽象和总结，对象是类的一个实体
+属性和方法
+    在类里面有一些属性，用来存放数据，方法是存放类
+    的一些功能，并且方法具有封装性
+继承
+    让子类从父类全盘继承属性和方法，并且在子类里面也可以根据需要从父类继承的属性方法进行一些改变
+
+
+Python面向对象基础
+
+定义类
+    主要利用到了class关键字
+
+定义属性和方法
+    一般在构造函数里写，定义方法也和构造函数差不多太多，跟一般的定义方法一样
+
+继承
+    它是把他放在类名的括号后，在Python里定义类，如果没有别的类继承最好继承object，继承object类被算成是
+    继承新式类，新式类有很多新的功能，如果不继承任何类的话在Python里算是老式类，在很多功能上是缺失的，这仅仅Python2的问题，python3就不存在了
+
+魔术方法
+    构造对象
+        最典型的就是最常用的构造函数，实例化对象时最开始的一步是创建一个类的对象，用的魔术方法是__new__, 当一个对象被垃圾回收时，调用的__del__
+    运算符
+        包括了算数运算符逻辑运算符，每种运算符都有魔术方法与之对应
+    类的展现
+        比如将类转换成字符串/Unicode，如果你想让你的类支持这种转换，就需要在类里定义相应的定制方法，
+        比如转换成字符串，需要在类里面定义__str__,转换成unicode，就需要定义__unicode__
+    类的属性访问
+        设置属性
+        查询属性
+            需要注意不要在代码里有无限递归的错误
+        删除属性
+    还有更多的魔术方法。。。详见python官方文档
+
+
