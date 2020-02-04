@@ -202,7 +202,7 @@ import requests
 def download_image():
     """demo:下载图片
     """
-    headers = {刚才复制的浏览器里的'User-Agent'}
+    headers = {"刚才复制的浏览器里的'User-Agent'"}
     url = "刚才的那个网址"
     response = requests.get(url, headers=headers)
     print(response.status_code, response.reason)
@@ -223,7 +223,7 @@ import requests
 def download_image():
     """demo:下载图片
     """
-    headers = {刚才复制的浏览器里的'User-Agent'}
+    headers = {"刚才复制的浏览器里的'User-Agent'"}
     url = "刚才的网址"
     response = requests.get(url, headers=headers)
     print(response.content)
@@ -239,7 +239,7 @@ import requests
 def download_image():
     """demo:下载图片
     """
-    headers = {刚才复制浏览器里的'User-Agent'}
+    headers = {"刚才复制浏览器里的'User-Agent'"}
     url = "刚才的网址"
     response = requests.get(url, headers=headers, stream=True)
     with open('demo.jpg', 'wb') as fd:
@@ -298,40 +298,64 @@ download_image()
 
 ### 4-3 事件钩子
 
- 比如用github或gitlab,比如去push,可以稍微改变一下
+什么是钩子? 
 
-开发模式是基于回调的
+​	  这种钩子在程序界特别流行,比如说用github或gitlab,有很多钩子函数,比如当你去`push`一个库的时候,它会自动去激发另一些东西.这种钩子都是事件驱动型开发,它可以稍微改变一下开发思路.最常见的就是JavaScript,它的很多开发模式都是基于回调的,这种回调就是事件完成之后它引起的一系列的动作.
 
-线性处理
+事件钩子在`Requests`库里面也会有这种体现,一般处理`response`都是线性处理,比如说先发`request`,发完之后拿到响应,接下来再做其他的事情.就像一个编剧一样,他会把事件按照时间先后顺序一个一个垒起来.尝试把它全部打散,就像“非线性叙事法”一样,我们把它打散,放在不同的地方,就像事件钩子一样.
 
-就像“非线性叙事”一样
+事件钩子整个过程是怎么样呢?
 
-我要怎么样才能触及到服务器,等这样的一个IO,整个模型就特别简单了,
+​	  首先,要在主程序中发起一个IO请求,比如像`requests`库,它就是发起了一个get或post或其他方式的IO请求,向互联网放出这样一个请求,我们要去等待,等待完之后,右边红色这一段就是我要怎样才能触及到服务器然后再回来.在主程序中我们会在发起请求的时候就注册一个这样的事件钩子,等这样一个IO请求结束之后它自动把`response`塞入到回调函数中,进行一个回调处理.
+
+下面用一个很小的程序梳理一下
 
 ```python
 import requests
 
-
-def main()
+def main():
+    """主程序
+    """
+    requests.get('https://www.baidu.com', hooks=dict(response=get_key_info))
 ```
 
-在我们主程序中,访问一下百度, 挂在钩子上, 可以注册一个字典, 我要注册一个响应的函数进去, 我想 这就不是线性的,
+首先还是引入`requests`库.
 
-这时候我又在前面添加一个回调函数,首先回调函数, 我们主要是拿response对象说事, 我想知道他headers里面的content-type是什么, 这个跟我
+接下来我们有一个主方法,这是我们的主程序.在主程序中,我们首先要做的就是`requests.get()`,比如我们就打印一下百度.等我们去发送一个`get`请求之后,我们想挂在它的钩子上,钩子在这个`requests`对象中我们就可以注册,它可以注册成一个字典函数,它的键就是`response`,当我接到这个`response`对象,我要注册一个相应的函数进去,那这个函数取个名字叫`get_key_info`,我想把它的一些关键性的信息能让我们很快地看到,这就不是线性的
 
-让我们更好的管理, 这样一些函数, 如果直接执行,
+```python
+import requests
 
-我们知道百度这个首页, 我们也可以换一个, http://api.github.com
+def get_key_info(response, *args, **kwargs):
+    """回调函数
+    """
+    print(response.headers['Content-Type'])
+    
+def main():
+    """主程序
+    """
+    requests.get('https://www.baidu.com', hooks=dict(response=get_key_info))
+    
+main()
+```
 
-再次运行这个小程序, 就是`application/json`
+这时候在前面再放一个函数,这个函数就是我们所谓的回调函数.拿到这个回调函数我们做了一件事情,首先回调函数会去接受几个参数,第一个参数就是`response`,其实还有其他相应的参数我们在这里不一一列出来,都把他们聚合在`*args`和`**kwargs`中间,我们主要是拿response对象说事.当这个钩子回来之后,我拿到这个`response`之后,我想知道它`headers`里面的`Content-Type`是什么,也就是它的这种内容的类型是什么,以便于我接下来做其他事情.
 
-整个程序更有好处
+这时候用这种思路来去总结和组织的程序模式就和我们用线性的方式一气呵成地写下来的感觉是不一样的,因此这种方式提供了另一种可能性帮你更好的去管理.可能你在某些情况下会这样用,更好的去管理这样一些函数.
 
-等到,打开了一个新的视角, 
+![截屏2020-02-0418.10.16](/Users/gregoryshen/Desktop/截屏2020-02-0418.10.16.png)
 
-Complexis better than complicated.
+执行这个函数,就打印出来了,它是一个`text/html`.我们知道百度这个首页是这样一个内容类型.
 
-Complex 可能是问题本身的复杂度,
+除此之外我们也可以换一个 http://api.github.com,再次运行这个小程序, 按照预期就是`application/json`
+
+![截屏2020-02-0418.13.29](/Users/gregoryshen/Desktop/截屏2020-02-0418.13.29.png)
+
+这就是一个最简单的钩子函数的写法.它重新组织了怎么去解析`response`,我把`request`和`response`可以更加合理地放在不同函数之中进行管理.我们写一个小程序这倒无所谓,但是组织大型程序可能它会对你组织程序更加有好处.它帮我们打开了一个新的视角, 去做相应的处理.
+
+Complex is better than complicated.
+
+Complicated其实是很嘈杂的意思,在程序里面我们可以很嘈杂的写很多程序,就是写的很多乱七八糟的;Complex可能是问题本身的复杂度,问题本身的复杂度要比你把这个问题解释成很嘈杂要更好.
 
 ## 第5章 进阶话题
 
