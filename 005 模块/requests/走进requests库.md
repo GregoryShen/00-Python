@@ -137,21 +137,21 @@ OPTIONS: 查看可用请求方法
 
 * 利用爬虫自动下载图片
 
-比如说一个很简单的任务,可能你会做一个爬虫,这时候拿个爬虫之后你需要去自动下载一个图片,那么你怎么去自动下载这个图片呢?我们都知道手动下载图片很简单,搜完之后另存为这样下载图片,这样下载图片速度太慢了,我们希望利用Requests这个库帮我们简化工作
+比如说一个很简单的任务,可能你会做一个爬虫,这时候拿个爬虫之后你需要去自动下载一个图片,那么你怎么去自动下载这个图片呢?我们都知道手动下载图片很简单,比如上百度随便搜一个图片,搜完之后右键另存为把它整理在我的文件夹里,这样下载图片速度太慢了,我们希望利用`requests`这个库帮我们简化工作
 
 * 远程下载服务器上的文本文件
 
-如果你在一个服务器上放了一个很大的csv文件,你需要远程把它拖下来,那这个文件也是可以通过http传输的方式进行相应的传输
+如果你在一个服务器上放了一个很大的`csv`文件,你需要远程把它拖下来,那这个文件也是可以通过`HTTP`传输的方式进行相应的传输
 
 我们接下来用一个很简单的小例子告诉大家怎么去下载这样的文件
 
-百度随便搜一个图片跟GitHub相关的图片,然后右键在新标签页打开,得到一个`.jpg`结尾的图片地址.
+百度随便搜一个图片跟`GitHub`相关的图片,然后右键在新标签页打开,得到一个`.jpg`结尾的图片地址.
 
 新起一个文件,文件的名字叫做`img_response.py`.
 
-新建一个方法叫做`download_image`,这个方法的主要功能也是帮我们下载图片的.
+新建一个方法叫做`download_image`,这个方法的主要功能是帮我们下载图片的.
 
-第一个我们肯定要知道它的`url`,在刚才的网页中已经看到了,我们把它直接拿过来,然后看看response(刚才是通过浏览器发出的`get`请求),就是用`requests`库,先把`requests`库引入进来,通过`requests`库`get`一下`url`这个地址;之后打印一下`response`的`content`信息,看看`content`信息到底是什么
+第一个我们肯定要知道它的`url`(在刚才的网页中已经看到了,我们把它直接拿过来),我们这时候想去看看它的`response`(刚才我们通过浏览器,浏览器其实也就是发了出`get`请求),我们就是用`requests`这个库,先把`requests`库引入进来,通过`requests`库去`get`一下这个`url`地址;之后打印一下`response`的`content`信息,看看`content`信息到底是什么
 
 ```python
 import requests
@@ -166,7 +166,7 @@ def download_image():
 download_image()
 ```
 
-返回一个`403 - Forbidden`,即没有权限去访问.对比浏览器,直接打开就可以获得图片,此时需要关注一下这个`response`的状态码,原因是什么,然后再看下`response`的`headers`是什么,这个时候我们已经知道`content`已经不是我们想要的内容了
+返回一个`403 - Forbidden`,即没有权限去访问.对比浏览器,直接打开就可以获得图片,此时需要关注一下这个`response`的`status_code`是什么,这相当于是一种探索,它的`reason`是什么,然后再看下`response`的`headers`是什么,这个时候我们已经知道`content`已经不是我们想要的内容了
 
 ```python
 import requests
@@ -190,9 +190,9 @@ download_image()
 {'Date': 'Mon, 18 Jul 2016 14:26:56 GMT', 'Content-Length': '345', 'Content-Type': 'text/html', 'Server': 'lighttpd'}
 ```
 
-我们看下浏览器的F12,我们发现我们的`User-Agent`是`requests`,它拒绝了这样的`User-Agent`,如果我们把浏览器的`User-Agent`盗用过来,是否能把图片下载下来呢?实践一下:
+我们看下浏览器,思考一下浏览器是怎么做的,调出浏览器的开发者模式,我们发现有一个地方和我们的程序很不一样,我们的`User-Agent`是`requests`,它拒绝了这样的`User-Agent`,如果我们把浏览器的`User-Agent`盗用过来,是否能把图片下载下来呢?实践一下:
 
-我们加一个`headers`的信息,刚才我们没加的时候`User-Agent`其实是`Python-requests`,这时候我们伪造一个类似于浏览器的`User-Agent`.
+打开脚本,我们加一个`headers`的信息,刚才我们没加的时候`User-Agent`其实是`Python-requests`,这时候我们伪造一个类似于浏览器的`User-Agent`.
 
 这时候在请求后面缀上`headers=headers`,就是让它相信我们这是一个从浏览器发出的请求:
 
@@ -202,7 +202,7 @@ import requests
 def download_image():
     """demo:下载图片
     """
-    headers = {"刚才复制的浏览器里的'User-Agent'"}
+    headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36'}
     url = "刚才的那个网址"
     response = requests.get(url, headers=headers)
     print(response.status_code, response.reason)
@@ -223,15 +223,15 @@ import requests
 def download_image():
     """demo:下载图片
     """
-    headers = {"刚才复制的浏览器里的'User-Agent'"}
+    headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36'}
     url = "刚才的网址"
     response = requests.get(url, headers=headers)
     print(response.content)
 ```
 
-结果是一片乱码,说明这个东西不能被`content`直接来解析,乱码就像是一个流一样,我们就要换成`raw`的方式来解析,`raw`的方式就是在`requests`里要支持流传输,流传输就相当于打开这样一个链接,相当于它是跟流一样让文件以比特流一个个流过来,然后把这个流再去像读文件一样转存到本地的文件.
+结果是一片乱码,说明这个东西不能被`content`直接来解析,乱码就像是一个流一样,我们就要换成raw的方式来解析,raw的方式就是在`requests`里让它去支持流传输,流传输就相当于打开这样一个链接,相当于它是跟流一样让文件以比特流一个一个流过来,然后把这个流再去像读文件一样转存到本地的文件.
 
-这时候可以在本地打开一个叫`demo.jpg`的文件,用写入的方式(`wb`), 这是一个file,根据`response`(`response`里面其实还有一个API叫做`iter_content`,可以去遍历它所有的内容,可以给它一个遍历的大小,比如128个遍历一次),然后把它写入文件地址(一个小的`chunk`),也就是一块一块地把它写到`demo.jpg`里面.
+这时候可以在本地打开一个叫`demo.jpg`的文件,用写入的方式(`wb`), 这是一个file,根据`response`(`response`里面其实还有一个API叫做`iter_content`,可以去遍历它所有的内容,可以给它一个遍历的大小,比如是128个遍历一次),然后把它写入文件地址(一个小的`chunk`),也就是一块一块地把它写到`demo.jpg`里面.
 
 ```python
 import requests
@@ -239,11 +239,11 @@ import requests
 def download_image():
     """demo:下载图片
     """
-    headers = {"刚才复制浏览器里的'User-Agent'"}
+    headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36'}
     url = "刚才的网址"
     response = requests.get(url, headers=headers, stream=True)
     with open('demo.jpg', 'wb') as fd:
-        for chunk in fd.iter_content(128):
+        for chunk in response.iter_content(128):
             fd.write(chunk)
             
 download_image()
@@ -253,28 +253,51 @@ download_image()
 
 稍作等待以后果然出现了`demo.jpg`.用`open demo.jpg`的方式打开查看图片是否为期待的图片.我们用这种方式就把它下载下来了.
 
-如果要用`requests`库下载图片或下载其他的文件,千万不要就直接想当然的用`content`,我们说文本用`content`,用`json`文本都可以看,但是有些`Content-Type`它不一样,所以这种`Content-Type`最好用上面的方式去做.
+如果要用`requests`库下载图片或下载其他的文件,千万不要就直接想当然地用`content`,我们说文本用`content`,用`json`文本都可以看,但是有些`Content-Type`它不一样,所以这种`Content-Type`最好用上面的方式去做.
 
-再推荐一种方式,因为建立这个流,这个流其实在`requests`里是打开的,没有把这个流关掉.
+再推荐一种方式,因为建立这个流,这个流其实在`requests`里是打开的,没有把这个流关掉.这是流传输的一种模式,再编写一种方法,叫做提升的一种方法,`download_image_improved`首先我也是利用它来下载图片,前面的都一样(`headers`,`url`,`response`),稍做一些注释,第一步就是伪造`headers`信息,第二步就是限定`URL`,这时候就生成了一个`response`
 
-1. 伪造headers 信息
-2. 限定URL,这时候就生成了一个response
+这时候通过引入另一个东西,在`Python`里面其实有很多很小的语法糖,比如说`contextlib`,它就是专门来去管上下文信息的,我可以让它自动去`close`掉请求和相应
 
-这时候通过引入另一个东西,在Python里面其实有很多的很小的语法糖,比如说`contextlib`,它就是专门来管上下文信息的,可以让它自动close掉请求和相应.把`response`的内容挪近close里作为参数,这时候对于我来说这是一个流,这个流已经读完之后,应该把它关掉;上一个方法没那么做,还是保持了这个链接,这时候会消耗一些资源,我们用这样一个管理上下文的方式就合理地避免了这一点.
+把`response`的内容移过来作为`closing`的参数,这时候读完这个流就应该把它关掉,上一个方法其实没这么做,还是保持了这个链接,这时候会消耗一些资源,我们用这样一个管理上下文的方式就合理地避免了这一点.
 
-3. 打开文件
+接下来还是跟前面一样,依然可以通过读取这个`response`来做后面的操作,依然可以打开这样一个文件(添加注释:打开文件),生成文件之后一个一个写入(添加注释:每128写入一次),之后写入这样一个`chunk`就行了
 
-接下来还是跟前面一样,依然可以通过读取这个response来做后面的操作,
+```python
+import requests
 
-4.每128就写入一次
-
-生成文件之后,来一个个去写入
+def download_image():
+    '''demo:下载图片
+    '''
+    headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36'}
+    url = 'xxxx'
+    response = requests.get(url, headers=headers, stream=True)
+    with open('demo.jpeg', 'wb') as fd:
+        for chunk in response.iter_content(128):
+            fd.write(chunk)
+            
+            
+def download_image_improved():
+    '''demo: 下载图片
+    '''
+    # 伪造headers 信息
+    headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36'}
+    # 限定url
+    url = ''
+    from contextlib import closing
+    with closing(requests.get(url, headers=headers, stream=True)) as response:
+        # 打开文件
+        with open('demo1.jpeg', 'wb') as fd:
+          # 每128写入一次
+            for chunk in response.iter_content(128):
+                fd.write(chunk)
+```
 
 这个和上面的区别就是增加了一个上下文的语境,因为这种方式是流传递,所以需要把这个流关掉.
 
-运行和验证方法与前述方法相同.
+这时候来调用一下这个方法`download_image_improved()`,按理说会在目录下出现一个`demo1.jpeg`
 
-简单回顾一下,刚才我们做的一个小小的改动,也就是在打开文件之前,,我们把response(因为它是经过`stream`来传输的)做了一个上下文,在它打开这样一个传输流之后,记得最后把它关上.
+简单回顾一下,刚才我们做的一个小小的改动,也就是在打开文件之前做了一个上下文.我们把`response`(因为它是经过`stream`来传输的)做了一个上下文,在它打开这样一个传输流之后,记得最后把它关上.
 
 用一个流程图简单梳理一下:
 
@@ -284,7 +307,7 @@ download_image()
 
 **构建request**
 
-​	  自己想办法把它构建成一个requests对象,这个过程中发出去经过简单的探索发现不行,只有不断去调试直到requests对象是我们想要的对象,比如刚才就是伪造了一下它的`headers`
+​	  自己想办法把它构建成一个request对象,这个过程中发出去经过简单的探索发现不行,只有不断去调试直到request对象是我们想要的对象,比如刚才就是伪造了一下它的`headers`
 
 **读取流data**
 
@@ -294,7 +317,7 @@ download_image()
 
 ​	  之后开启一个文件并且把它存入数据,存成一个文件模式.
 
-这就是如何利用reqeusts把它的response对象存成图片或者文件
+这就是如何利用`reqeusts`把它的`response`对象存成图片或者文件
 
 ### 4-3 事件钩子
 
@@ -512,9 +535,50 @@ class GithubAuth(AuthBase):
 
 ![截屏2020-02-1018.23.15](/Users/gregoryshen/Desktop/截屏2020-02-1018.23.15.png)
 
-简单回顾一下,这就是我们的一个`OAUTH`认证,它是建立在client端和GitHub平台之间的一种认证体系,它相对于基本认证来说更加安全,因为它没有直接把明文传输,而它是让需要GitHub平台进行确认的,app完全是没有拿到用户名密码,所以不容易去暴露用户的隐私,它也是很好的一种`HTTP`认证的模式,
+简单回顾一下,这就是我们的一个`OAUTH`认证,它是建立在client端和GitHub平台之间的一种认证体系,它相对于基本认证来说更加安全,因为它没有直接把明文传输,而它是让需要GitHub平台进行确认的,app完全是没有拿到用户名密码,所以不容易去暴露用户的隐私,它也是很好的一种`HTTP`认证的模式.
 
 ### 5-2 Proxy代理
+
+在网络请求中,我们首先只是和中介打交道,在内网中`laptop`和`proxy`打交道,此时`laptop`就是一个客户端,中间人充当了一个服务端角色,中间人其实是把这个请求拿下来,然后它再和外部的服务器打交道,对于后面这一段,代理就相当于是一个客户端,服务器就相当于是一个服务端,此时就完成了一个代理工作.
+
+代理中可以完成的协议有很多,主要的工作就是把请求转发出去,可以通过各种各样的模式进行转发,它一个常用的应用就是如何去跳过防火墙访问外网.
+
+通过requests库也可以帮大家实现这样一个代理,
+
+1. 启动代理服务Heroku
+
+   ​	  Heroku类似中国的阿里云
+
+2. 在主机1080端口启动Socks服务
+
+3. 将请求转发到1080端口
+
+4. 获取相应资源
+
+代码实现:
+
+首先需要安装`Requests`库对于`socksv5`的一个支持: `pip install 'requests[socks]'`
+
+此时利用`Requests`库,首先要定义一系列的`proxies`,`proxies`一般定义出来就是对于所有的HTTP请求要走哪个协议(比如说走`socks5`的协议,`socks5`也是一个最早的时候一种类似于HTTP的一个协议,在会话层),对于HTTPS的请求也一样,也把它转到`socks5`本机的1080端口.
+
+给一个不能直接访问的URL,然后用`Requests`去访问,得到`timeout`的结果 
+
+```python
+>>> import requests
+>>> proxies = {'http': 'socks5://127.0.0.1:1086', 'https': '127.0.0.1:1086'}
+>>> url = 'https://www.facebook.com'
+>>> response = requests.get(url, timeout=10)
+```
+
+![截屏2020-02-1118.16.32](/Users/gregoryshen/Desktop/截屏2020-02-1118.16.32.png)
+
+![截屏2020-02-1118.17.23](/Users/gregoryshen/Desktop/截屏2020-02-1118.17.23.png)
+
+这时候加一个`proxies`,再去请求一下,
+
+```python
+>>> resp = requests.get(url, )
+```
 
 
 
