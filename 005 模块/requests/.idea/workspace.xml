@@ -126,6 +126,7 @@
       <workItem from="1581353068470" duration="204000" />
       <workItem from="1581353408815" duration="422000" />
       <workItem from="1581412927504" duration="1154000" />
+      <workItem from="1581604771204" duration="739000" />
     </task>
     <servers />
   </component>
@@ -133,9 +134,14 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="397" y="294" key="com.intellij.ide.util.TipDialog" timestamp="1581412927812">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state x="0" y="228" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1581604797601">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
+    <state x="0" y="228" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1440.900/-1920.-148.1920.1080@0.0.1440.900" timestamp="1581604797601" />
+    <state x="373" y="245" key="com.intellij.ide.util.TipDialog" timestamp="1581604977269">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="373" y="245" key="com.intellij.ide.util.TipDialog/0.0.1440.900/-1920.-148.1920.1080@0.0.1440.900" timestamp="1581604977269" />
     <state x="397" y="294" key="com.intellij.ide.util.TipDialog/0.23.1440.877/-1920.-125.1920.1057@0.23.1440.877" timestamp="1581412927812" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">

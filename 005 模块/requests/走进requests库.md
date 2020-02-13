@@ -565,7 +565,7 @@ class GithubAuth(AuthBase):
 
 ```python
 >>> import requests
->>> proxies = {'http': 'socks5://127.0.0.1:1086', 'https': '127.0.0.1:1086'}
+>>> proxies = {'http': 'socks5://127.0.0.1:1086', 'https': 'socks5://127.0.0.1:1086'}
 >>> url = 'https://www.facebook.com'
 >>> response = requests.get(url, timeout=10)
 ```
@@ -577,10 +577,14 @@ class GithubAuth(AuthBase):
 这时候加一个`proxies`,再去请求一下,
 
 ```python
->>> resp = requests.get(url, )
+>>> resp = requests.get(url, proxies=proxies, timeout=10)
+>>> resp.status_code
+200
 ```
 
+![截屏2020-02-1322.53.48](/Users/gregoryshen/Desktop/截屏2020-02-1322.53.48.png)
 
+其实这个原理也就很简单,我就启动了一个代理服务器,把我本机所有的请求发过去,然后可以让那些我触及不到的请求过来,这时候就相当于用了一个绕过防火墙.其实内网和外网也可以这样使用,只不过更加进阶一点.
 
 ### 5-3 Session和Cookie
 
