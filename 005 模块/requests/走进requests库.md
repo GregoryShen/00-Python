@@ -590,11 +590,68 @@ class GithubAuth(AuthBase):
 
 HTTP是一种无状态的响应,就是一个请求过去,和下一个请求没有任何关系.但是经常有很多应用需要让两个有关系,比如你已经是个登录用户了,你现在已经把一些东西加入到购物车,那不能说跳转个页面购物车东西没了,因为你是没有状态的,所以这时候需要两种机制来解决:一个是session一个是cookie
 
-session位于服务器端来存储一些用户信息,去保留这种状态;cookie是浏览器端来存储
+一言来区分:session属于服务器端来存储一些用户信息,去保留这种状态;cookie是浏览器端来存储
 
-首先来看看cookie的存储原理:
+#### Cookie的原理:
 
-1. 浏览器首先发送一个HTTP请求(无cookie),它是第一个请求所以没有任何cookie,
+```sequence
+浏览器->服务器:HTTP请求(无cookie)
+服务器->浏览器:HTTP响应(set cookie)
+note left of 浏览器: 解析cookie 保存本地
+浏览器->服务器:HTTP请求(带cookie)
+note right of 服务器: 解析cookie 识别信息
+服务器->浏览器:HTTP响应
+```
+
+1. 首先就是服务器和浏览器打交道.浏览器首先发一个请求,这个请求是没有带任何`cookie`的,它是第一个请求所以没有`cookie`,服务器拿到这个之后呢,服务器说,好,你认证通过(它把username和password给你,然后服务器在自己的库里面去找,发现你有这样的权限),那它就发出一个响应,在它的响应头上有一个`set cookie`,它可以去设这个`cookie`的有效期、权限范围等等,设置完之后给浏览器.
+2. 浏览器拿到之后呢,它会把`cookie`保存在本地,保存在本地之后它下一次或者之后每一次请求都会把这个`cookie`带上,它的请求都是带`cookie`的,带上cookie之后服务器去解析这个`cookie`识别信息发现这个`cookie`确实是我上次给他设的那个`cookie`,包括解析出来的东西也都是正确的,然后给了一个响应,这时候浏览器就完成了这样一个操作.你比如说以后都带`cookie`,那我就知道唯一识别出来你这个用户是那个用户
+
+在requests库的实现方式:
+
+比如说对应去设置一个`cookie`:比如说从一个URL拿到一个response,然后就可以用`.cookies`,然后`cookiename`就可以拿到这个`cookie`
+
+```python
+>>> r = requests.get(url)
+>>> r.cookies['cookiename']
+```
+
+下次发的时候就给他设置`cookie`:就是request的时候把`cookies`带上
+
+```python
+>>> cookies = dict(c='uid')
+>>> requests.get(url, cookies=cookies)
+```
+
+那这样一个方式好不好呢,有几个不好的地方:第一个就是每次请求的时候都得带着`cookie`,那么我的带宽就会变得很大,特别占用网络请求;其次`cookie`是在浏览器端的,`cookie`如果是明文去存储的话很多东西容易解析的话你其实可以去伪造,所以这种方式不安全.
+
+#### Session的原理:
+
+Session这种方式其实是在服务器端把用户的信息存储下来,只是跟上面的图稍稍有所不同:
+
+```sequence
+浏览器->服务器:HTTP请求
+note right of 服务器: 存储session
+服务器->浏览器:HTTP响应(set cookie-session-id)
+note left of 浏览器: 解析cookie 保存本地
+浏览器->服务器:HTTP请求(带cookie)
+note right of 服务器: 解析sessionid
+服务器->浏览器:HTTP响应
+```
+
+1. 首先第一个也是一个HTTP请求是没有cookie的,这时候服务器去认证完之后它去建立了一个所谓的叫会话的东西,叫存储了这个session,它可能把这个session起了一个叫session-id,它把这个id存在自己的数据库里也好,redis里面也好,内存里面也好,或者是其他什么介质里面也好,只要他之后能去查阅,所以它把整个存储任务从网络上转移到了自己的服务器这一端.它其实也是要给一个响应,设置一个叫做`session-id`的`cookie`
+2. 浏览器拿到这个之后,它也会把这个`cookie`保存在本地,但是这个`cookie`的大小特别小,它仅含有一个`session-id`,可能是服务端生成的一个类似于刚才`OAUTH`里面提到的一个一串码的形式,此时HTTP请求带上了`cookie`,带上`cookie`之后服务器就解析出来,把`session-id`拿出来,拿出来之后就去存储里面查,这个`session-id`对应的一些权限信息、用户信息到底是什么,所以存储的时候就转移到了服务器端,然后给了一个HTTP响应
+
+Session和cookie之间不同其实就是把压力从浏览器端转移到服务器端,然后把带宽上(比如网络传输上)的压力转移到服务器端存储的压力,而且因为网络总体来说是不安全的,所以我们把一种不安全的介质—网络转移到安全的介质—服务器这边和存储,这边是安全的.
+
+这块没有用代码分享因为很多时候session这块不涉及到客户端编程,因为requests主要支持的是客户端编程.对于服务器端编程,可以看Python里面Flask,Django,tornado,这些库都有实现session和cookie的机制
+
+#### 参考资源
+
+Github repo:https://github.com/jian-en/imooc-requests.git
+
+Think with the first principle 用第一原理去思考问题
+
+
 
 
 
