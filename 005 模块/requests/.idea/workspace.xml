@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c26dc38e-cc06-4697-a4e6-47534f1bc6fe" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/走进requests库.md" beforeDir="false" afterPath="$PROJECT_DIR$/走进requests库.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../012 访问数据库/12 数据库.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../012 访问数据库/12 数据库.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../017 面试题/知乎面试题.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../017 面试题/知乎面试题.md" afterDir="false" />
     </list>
@@ -126,7 +124,7 @@
       <workItem from="1581353068470" duration="204000" />
       <workItem from="1581353408815" duration="422000" />
       <workItem from="1581412927504" duration="1154000" />
-      <workItem from="1581604771204" duration="739000" />
+      <workItem from="1581604771204" duration="1375000" />
     </task>
     <servers />
   </component>
