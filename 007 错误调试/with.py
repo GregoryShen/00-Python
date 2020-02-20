@@ -1,3 +1,31 @@
+# import os
+#
+# try:
+#     f = open('F.txt')
+#     print("in try -> f.read():", f.read())
+#     f.seek(-5, os.SEEK_SET)
+# except IOError as e:
+#     print("Catch IOError:", e)
+# except ValueError as e:
+#     print("Catch ValueError:", e)
+# finally:
+#     f.close()
+# print("try-finally: ", f.closed)
+
+# with open('F.txt') as f1:
+#     print('in with -> f1.read():', f1.read())
+#     f1.seek(-5, os.SEEK_SET)
+# print("with: ", f1.closed)
+
+# try:
+#     with open('F.txt') as f1:
+#         print("in with f1.read():", f1.read())
+#         f.seek(-5, os.SEEK_SET)
+# except ValueError as e:
+#     print("in with catch ValueError:", e)
+#     print("with:", f1.closed)
+
+
 class MyContext:
     def __init__(self, name):
         self.name = name
