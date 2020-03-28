@@ -1,4 +1,4 @@
-﻿IO在计算机中指Input/Output，也就是输入和输出。由于程序和运行时数据是在内存中驻留，由CPU这个超快的
+IO在计算机中指Input/Output，也就是输入和输出。由于程序和运行时数据是在内存中驻留，由CPU这个超快的
 计算核心来执行，涉及到数据交换的地方，通常是磁盘、网络等，就需要IO接口。
 
 比如你打开浏览器，访问新浪首页，浏览器这个程序就需要通过网络IO获取新浪的首页。浏览器首先会发送数据
@@ -17,3 +17,43 @@ IO编程中，Stream（流）是一个很重要的概念，可以把流想象成
 异步IO
 
 同步和异步的区别就在于是否等待IO执行的结果。
+
+
+自测题：
+1. 为什么需要IO接口？
+2. 举例说明什么是Output/Input, IO每次都是成对出现的吗？不是的话请举例
+3. 同步IO和异步IO的区别
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+自测题答案：
+1. 为什么需要IO接口？
+
+由于程序和运行时数据是在内存中驻留，由CPU这个超快的计算核心来执行，涉及到
+数据交换的地方，通常是磁盘、网络等，就需要IO接口
+
+
+可以直接使用sys.path.append($project/lib) 将lib目录添加到搜索module 的目录中去，然后直接 import mylib即可导入lib/mylib.py模块
+
+sys.path: A list of strings that specifies the search path for 
+modules. Initialized from the environment variable PATHONPATH, plus
+an installation-dependent default.
+
+PYTHONPATH: Augment the default search path for module files.
+扩大默认的模块搜索路径
+
+python 脚本所在目录，是其在sys.path的第一个位置， sys.path[0]，之后是
+$PYTHONPATH设置的搜索目录，之后是python版本相关的一些搜索路径，最后是
+sys.path.append(mypath) 添加的路径
