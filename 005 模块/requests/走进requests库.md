@@ -319,6 +319,83 @@ def download_image_improved():
 
 这就是如何利用`reqeusts`把它的`response`对象存成图片或者文件
 
+----
+
+#### requests官方文档里涉及到的知识点
+
+##### Quick Start-Custom Headers
+
+If you’d like to add HTTP headers to a request, simply pass in a `dict` to the headers parameter.
+
+For example, we didn’t specify our user-agent in the previous example:
+
+```python
+>>> url = 'https://api.github.com/some/endpoint'
+>>> headers = {'User-agent': 'my-app/0.0.1'}
+
+>>> r = requests.get(url, headers=headers)
+```
+
+Note: Custom headers are given less precedence than more specific sources of information. For instance:
+
+* Authorization headers set with *headers=* will be overridden if credentials are specified in `.netrc`, which in turn will be overridden by the `auth=` parameter.
+* Authorization headers will be removed if you get redirected off-host.
+* Proxy-Authorization headers will be overridden by proxy credentials provided in the URL.
+* Content-Length headers will be overridden when we can determine the length of the content.
+
+Futhtermore, Requests doe not change its behavior at all based on which custom headers are specified. The headers are simply passed on into the final request.
+
+Note: All header values must be a `string`, byte string, or unicode. While permitted, it’s advised to avoid passing unicode header values.
+
+##### Advanced Usage-Streaming Requests
+
+With **Response.iter_lines()** you can easily iterate over streaming APIs such as the Twitter Streaming API. Simply set `stream` to `True` and iterate over the response with **iter_lines**:
+
+```python
+import json
+import requests
+
+r = requests.get('https://httpbin.org/stream/20', stream=True)
+
+for line in r.iter_lines():
+    
+    # filter out keep-alive new lines
+    if line:
+        decoded_line = line.decode('utf-8')
+        print(json.loads(decode_line))
+```
+
+When using *decode_unicode*=True with **Response.iter_lines()** or **Response.iter_content()**, you’ll want to provide a fallback encoding in the event the server doesn’t provide one:
+
+```python
+r = requests.get('https://httpbin.org/stream/20', stream=True)
+
+if r.encoding is None:
+    r.encoding = 'utf-8'
+    
+for line in r.iter_lines(decode_unicode=True):
+    if line:
+        print(json.loads(line))
+```
+
+##### Developer Interface-Lower-Level Classes
+
+class requests.**Response** [source](https://requests.readthedocs.io/en/master/_modules/requests/models/#Response)
+
+The `Response` object, which contains a server’s response to an HTTP request.
+
+...
+
+**iter_content**(*chunk_size=1, decode_unicode=False*)
+
+Iterates over the response data. When stream=True is set on the request, this avoids reading the content at once into memory for large responses. The chunk size is the number of bytes it should read into memory. This is not necessarily the length of each item returned as decoding can take place.
+
+chunk_size must be of type int or None. A value of None will function differently depending on the value of *stream*. stream=True will read data as it arrives in whatever size the chunks are received. If stream=False, data is returned as a single chunk.
+
+If decode_unicode is True, content will be decoded using the best available encoding based on the response.
+
+
+
 ### 4-3 事件钩子
 
 什么是钩子? 
