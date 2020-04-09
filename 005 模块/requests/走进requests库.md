@@ -257,7 +257,7 @@ download_image()
 
 再推荐一种方式,因为建立这个流,这个流其实在`requests`里是打开的,没有把这个流关掉.这是流传输的一种模式,再编写一种方法,叫做提升的一种方法,`download_image_improved`首先我也是利用它来下载图片,前面的都一样(`headers`,`url`,`response`),稍做一些注释,第一步就是伪造`headers`信息,第二步就是限定`URL`,这时候就生成了一个`response`
 
-这时候通过引入另一个东西,在`Python`里面其实有很多很小的语法糖,比如说`contextlib`,它就是专门来去管上下文信息的,我可以让它自动去`close`掉请求和相应
+这时候通过引入另一个东西,在`Python`里面其实有很多很小的语法糖,比如说`contextlib`,它就是专门来去管上下文信息的,我可以让它自动去`close`掉请求和响应
 
 把`response`的内容移过来作为`closing`的参数,这时候读完这个流就应该把它关掉,上一个方法其实没这么做,还是保持了这个链接,这时候会消耗一些资源,我们用这样一个管理上下文的方式就合理地避免了这一点.
 
@@ -388,7 +388,7 @@ The `Response` object, which contains a server’s response to an HTTP request.
 
 **iter_content**(*chunk_size=1, decode_unicode=False*)
 
-Iterates over the response data. When stream=True is set on the request, this avoids reading the content at once into memory for large responses. The chunk size is the number of bytes it should read into memory. This is not necessarily the length of each item returned as decoding can take place.
+Iterates over the response data. When `stream=True` is set on the request, this avoids reading the content at once into memory for large responses. The chunk size is the number of bytes it should read into memory. This is not necessarily the length of each item returned as decoding can take place.
 
 chunk_size must be of type int or None. A value of None will function differently depending on the value of *stream*. stream=True will read data as it arrives in whatever size the chunks are received. If stream=False, data is returned as a single chunk.
 
@@ -443,13 +443,13 @@ main()
 
 这时候用这种思路来去总结和组织的程序模式就和我们用线性的方式一气呵成地写下来的感觉是不一样的,因此这种方式提供了另一种可能性帮你更好的去管理.可能你在某些情况下会这样用,更好的去管理这样一些函数.
 
-![截屏2020-02-0418.10.16](/Users/gregoryshen/Desktop/截屏2020-02-0418.10.16.png)
+![截屏2020-02-0418.10.16](/Users/gregoryshen/Desktop/截图/截屏2020-02-0418.10.16.png)
 
 执行这个函数,就打印出来了,它是一个`text/html`.我们知道百度这个首页是这样一个内容类型.
 
 除此之外我们也可以换一个 http://api.github.com,再次运行这个小程序, 按照预期就是`application/json`
 
-![截屏2020-02-0418.13.29](/Users/gregoryshen/Desktop/截屏2020-02-0418.13.29.png)
+![截屏2020-02-0418.13.29](/Users/gregoryshen/Desktop/截图/截屏2020-02-0418.13.29.png)
 
 这就是一个最简单的钩子函数的写法.它重新组织了怎么去解析`response`,我把`request`和`response`可以更加合理地放在不同函数之中进行管理.我们写一个小程序这倒无所谓,但是组织大型程序可能它会对你组织程序更加有好处.它帮我们打开了一个新的视角, 去做相应的处理.
 
@@ -521,7 +521,7 @@ basic_auth()
 
 `auth`主要做的工作就是在`request`的`headers`上加了:
 
-![截屏2020-02-0920.03.20](/Users/gregoryshen/Desktop/截屏2020-02-0920.03.20.png)
+![截屏2020-02-0920.03.20](/Users/gregoryshen/Desktop/截图/截屏2020-02-0920.03.20.png)
 
 是一个基本认证,后面一串码用一个很小的技巧就一目了然了,首先进入交互解释器,这个其实是一个base64的码,给它一个b64的`decode`,
 
@@ -530,7 +530,7 @@ basic_auth()
 >>> base64.b64decode('Z3JlZ29yeXNoZW50akBnbWFpbC5jb206c2hlbnhpbjIyMDE5ODkx')
 ```
 
-![截屏2020-02-0920.15.33](/Users/gregoryshen/Desktop/截屏2020-02-0920.15.33.png)
+![截屏2020-02-0920.15.33](/Users/gregoryshen/Desktop/截图/截屏2020-02-0920.15.33.png)
 
 这是`base64`的码,看上去好像是很有隐秘性,谁也看不懂,实际上用一般的程序,Python也好,Java也好都可以把它`decode`出来,解码出来它就是把`username`和`password`直接放在headers里面,那这样安不安全呢
 
@@ -610,7 +610,7 @@ class GithubAuth(AuthBase):
 
 `auth`就可以用面向对象的方式改进一下,这样复用性比较强,我们把刚才的token再次传递进去,这时候`response`的写法就变得简单了,(变成了和基本认证写法差不多的
 
-![截屏2020-02-1018.23.15](/Users/gregoryshen/Desktop/截屏2020-02-1018.23.15.png)
+![截屏2020-02-1018.23.15](/Users/gregoryshen/Desktop/截图/截屏2020-02-1018.23.15.png)
 
 简单回顾一下,这就是我们的一个`OAUTH`认证,它是建立在client端和GitHub平台之间的一种认证体系,它相对于基本认证来说更加安全,因为它没有直接把明文传输,而它是让需要GitHub平台进行确认的,app完全是没有拿到用户名密码,所以不容易去暴露用户的隐私,它也是很好的一种`HTTP`认证的模式.
 
@@ -647,9 +647,9 @@ class GithubAuth(AuthBase):
 >>> response = requests.get(url, timeout=10)
 ```
 
-![截屏2020-02-1118.16.32](/Users/gregoryshen/Desktop/截屏2020-02-1118.16.32.png)
+![截屏2020-02-1118.16.32](/Users/gregoryshen/Desktop/截图/截屏2020-02-1118.16.32.png)
 
-![截屏2020-02-1118.17.23](/Users/gregoryshen/Desktop/截屏2020-02-1118.17.23.png)
+![截屏2020-02-1118.17.23](/Users/gregoryshen/Desktop/截图/截屏2020-02-1118.17.23.png)
 
 这时候加一个`proxies`,再去请求一下,
 
@@ -659,7 +659,7 @@ class GithubAuth(AuthBase):
 200
 ```
 
-![截屏2020-02-1322.53.48](/Users/gregoryshen/Desktop/截屏2020-02-1322.53.48.png)
+![截屏2020-02-1322.53.48](/Users/gregoryshen/Desktop/截图/截屏2020-02-1322.53.48.png)
 
 其实这个原理也就很简单,我就启动了一个代理服务器,把我本机所有的请求发过去,然后可以让那些我触及不到的请求过来,这时候就相当于用了一个绕过防火墙.其实内网和外网也可以这样使用,只不过更加进阶一点.
 
