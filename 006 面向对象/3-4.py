@@ -1,7 +1,7 @@
 class Programmer:
     hobby = 'Play Computer'
 
-    def __init__(self, name, age, weight):
+    def __init__(self, name, age=None, weight=None, *args, **kwargs):
         self.name = name
         self._age = age
         self.__weight = weight
@@ -25,7 +25,7 @@ class BackendProgrammer(Programmer):
 
 
 if __name__ == '__main__':
-    programmer = BackendProgrammer('Albert', 25, 80, 'Python')
+    programmer = BackendProgrammer('Albert', 20, 80, 'Python')
     print(dir(programmer))
     print(programmer.__dict__)
     print(type(programmer))
