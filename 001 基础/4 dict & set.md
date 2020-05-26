@@ -97,6 +97,46 @@ del dict   删除字典
 
 这个讲的还是很优秀的
 
+`dict()`函数用于创建一个字典。
+
+dict 语法：
+
+```python
+class dict(**kwargs)
+class dict(mapping, **kwargs)
+class dict(iterable, **kwargs)
+
+# 参数说明:
+# **kwargs 关键字
+# mapping  元素的容器
+# iterable 可迭代对象
+```
+
+实例：
+
+```python
+>>> dict()			# 创建空字典
+{}
+>>> dict(a='a', b='b', t='t')		# 传入关键字
+{'a': 'a', 'b': 'b', 't': 't'}
+>>> dict(zip(['one', 'two', 'three'], [1, 2, 3]))	# 映射函数方式来构造字典
+{'three': 3, 'two': 2, 'one': 1} 
+>>> dict([('one', 1), ('two', 2), ('three', 3)]) 	# 可迭代对象方式来构造字典
+{'three': 3, 'two': 2, 'one': 1}
+```
+
+扩展： `zip` 函数
+
+`zip()`函数用于将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的对象，这样做的好处是节约了不少的内存
+
+可以使用`list()`转换来输出列表
+
+如果各个迭代器的元素个数不一致，则返回列表长度与最短的对象相同，利用`*`操作符号，可以将元组解压为列表
+
+
+
+
+
 [Python——字典dict()详解](https://www.cnblogs.com/mingmingming/p/11050495.html)
 
 字典是python提供的一种数据类型，用于存放有映射关系的数据。字典相当于两组数据，其中一组是key，是关键数据（程序对字典的操作都是基于key），另一组数据是value，可以通过key来进行访问

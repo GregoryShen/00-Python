@@ -59,3 +59,29 @@ list元素也可以是另一个list
 0
 ```
 
+
+
+[Python 列表(List)](https://www.runoob.com/python/python-lists.html)
+
+[Python list 操作](https://www.cnblogs.com/zhengyuxin/articles/1938300.html)
+
+[Python 列表(Lists)](https://www.w3cschool.cn/python/python-lists.html)
+
+[Python List list()方法](https://www.runoob.com/python/att-list-list.html)
+
+[Python列表（list）的基本用法](https://blog.csdn.net/laobai1015/article/details/85126659)
+
+[python中对list去重的多种方法](https://www.cnblogs.com/nyist-xsk/p/7473236.html)
+
+[Python list列表删除元素（4种方法）](http://c.biancheng.net/view/2209.html)
+
+[python中list的五种查找方法](https://blog.csdn.net/qq_31747765/article/details/80944227)
+
+
+
+[Python3 元组](https://www.runoob.com/python3/python3-tuple.html)
+
+[Python 元组(Tuple)操作详解](https://www.jb51.net/article/47986.htm)
+
+
+
