@@ -141,7 +141,111 @@ class dict(iterable, **kwargs)
 
 字典是python提供的一种数据类型，用于存放有映射关系的数据。字典相当于两组数据，其中一组是key，是关键数据（程序对字典的操作都是基于key），另一组数据是value，可以通过key来进行访问
 
-https://blog.csdn.net/JNingWei/article/details/78757673
+> class dict(object)
+>
+> dict() -> new empty dictionary
+>
+> dict(mapping) -> new dictionary initialized from a mapping object’s (key, value) pairs
+>
+> dict(iterable) -> new dictionary initialized as if via:
+>
+> d = {}
+>
+> for k, v in iterable:
+>
+> d[k] = v
+>
+> dict(**kwargs) -> new dictionary initialized with the name=value pairs in the keyword argument list. For example: dict(one=1, two=2)
+
+字典的常用方法：
+
+1. `clear`
+2. `copy`
+3. `fromkeys`
+4. `get`
+5. items
+6. keys
+7. values
+
+注意事项：
+
+列表不允许对不存在的索引复制，但字典允许对不存在的键复制
+
+```python
+p = [1, 2, 3, 4, 5]
+# 对不存在的索引赋值
+p[5] = 666
+# 报错 IndexError: list assignment index out of range
+
+q = dict(a=1, b=2)
+# 对不存在的key赋值
+q['c'] = 3
+print(q)
+
+
+```
+
+
+
+[python: dict(字典) 操作](https://blog.csdn.net/JNingWei/article/details/78757673)
+
+key-value
+
+|    名称     | 唯一性 |     数据类型     | 可变性 |
+| :---------: | :----: | :--------------: | :----: |
+|  key（键）  |  唯一  | 数字/字符串/元组 | 不可变 |
+| value（值） | 不唯一 |       任意       |  可变  |
+
+字典定义
+
+字典访问
+
+​	通过指定key值访问对应的value
+
+字典长度
+
+字典打印
+
+​	以字符串形式
+
+```python
+dict = {'city': 'nanjing', 'university': 'NUAA'}
+
+# 字典打印（以字符串形式）
+assert str(dict) == "{'city': 'nanjing', 'university': 'NUAA'}"
+```
+
+字典复制：浅复制
+
+字典取值：不修改字典：get方法
+
+​					修改字典：
+
+key存在： if i in dict
+
+可遍历的key-value数组：`dict.items()`
+
+key列表： `dict.keys()`
+
+value列表： `dict.values()`
+
+### 字典合并
+
+通过`update`合并字典
+
+```python
+dict = {'city': 'nanjing', 'university': 'NUAA'}
+dict_2 = {'collage': 'cs', 'degree': 'master'}
+
+dict.update(dict_2)
+assert dict == {'city': 'nanjing', 'university': 'NUAA', 'collage': 'cs', 'degree': 'master'}
+```
+
+注意：
+
+如果合并时，存在相同的key值，那么只会保留后者的键值对，而非合并：
+
+
 
 https://www.w3cschool.cn/python/python-dictionary.html
 
