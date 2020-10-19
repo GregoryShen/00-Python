@@ -245,6 +245,17 @@ assert dict == {'city': 'nanjing', 'university': 'NUAA', 'collage': 'cs', 'degre
 
 如果合并时，存在相同的key值，那么只会保留后者的键值对，而非合并：
 
+字典删除:
+
+1. 通过`pop`
+
+删除字典给定键key所对应的值,返回值为被删除的值.key值必须给出,否则返回default值
+
+
+
+1. 通过`del`
+2. 通过`popitem`
+
 
 
 https://www.w3cschool.cn/python/python-dictionary.html
