@@ -96,7 +96,7 @@ logging.basicConfig(level=numeric_level, ...)
 
 The call to `basicConfig()` should come before any calls to debug(), info() etc. As it’s intended as a one-off simple configuration facility, only the first call will actually do anything: subsequent calls are effectively no-ops.
 
-If you run the above script several times, the messages from successive runs are appended to the file *example.log*. ==If you want each run to start afresh, not remembering the messages from earlier runs, you can specify the *filemode* argument==, by changing the call in the above example to:
+If you run the above script several times, the messages from successive runs are appended to the file `*example.log*`. ==If you want each run to start afresh, not remembering the messages from earlier runs, you can specify the *filemode* argument==, by changing the call in the above example to:
 
 ```python
 logging.basicConfig(filename='example.log', filemode='w', level=logging.DEBUG)
@@ -249,11 +249,35 @@ You can change this by passing a format string to `basicConfig()` with the forma
 
 ### Logging Flow
 
+The flow of log event information in loggers and handlers is illustrated in the following diagram.
 
+![](https://docs.python.org/3.8/_images/logging_flow.png)
 
 ### Loggers
 
+Logger objects have a threefold job. First, they expose several methods to application code so that applications can log messages at runtime. Second, logger objects determine which log messages to act upon based upon severity (the default filtering facility) or filter objects. Third, logger objects pass along relevant log messages to all interested log handlers.
 
+The most widely used methods on logger objects fall into two categories: configuration and message sending.
+
+These are the most common configuration methods:
+
+* `Logger.setLevel()` specifies the lowest-severity log message a logger will handle, where debug is the lowest built-in severity level and critical is the highest built-in severity. For example, if the severity level is INFO, the logger will handle only INFO, WARNING, ERROR, and CRITICAL messages and will ignore DEBUG messages.
+* `Logger.addHandler()` and `Logger.removeHandler()` add and remove handler objects from the logger object. 
+* `Logger.addFilter()` and `Logger.removeFilter()` add and remove filter objects from the logger object.
+
+You don’t need to always call these methods on every logger you create. See the last two paragraphs in this section.
+
+With the logger object configured, the following methods create log messages:
+
+* `Logger.debug()`, `Logger.info()`, `Logger.warning()`, `Logger.error()`, and `Logger.critical()` all create log records with a message and a level that corresponds to their respective method names. The message is actually a format string, which may contain the standard string substitution syntax of ‘%s’, ‘%d’, ‘%f’, and so on. The rest of their arguments is a list of objects that correspond with the substitution fields in the message. With regard to `**kwargs`, the logging methods care only about a keyword of `exc_info` and use it to determine whether to log exception information.
+* `Logger.exception()` creates a log message similar to `Logger.error()`. The difference is that `Logger.exception()` dumps a stack trace along with it. Call this method only from an exception handler.
+* `Logger.log()` takes a log level as an explicit argument. This is a little more verbose for logging messages than using the log level convenience methods listed above, but this is how to log at custom log levels.
+
+==`getLogger()` returns a reference to a logger instance with the specified name if it is provided, or `root` if not.== The names are period-separated hierarchical structures. <u>Multiple calls to `getLogger()` with the same name will return a reference to the same logger object.</u> Loggers that are further down in the hierarchical list are children of loggers higher up in the list. 
+
+Loggers have a concept of <u>effective level</u>. If a level is not explicitly set on a logger, the level of its parent is used instead as its effective level. If the parent has no explicit level set, its parent is examined, ans so on - all ancestors are searched until an explicitly set level is found. The root logger always has an explicit level set (WARNING by default). When deciding whether to process an event, the effective level of the logger is used to determine whether the event is passed to the logger’s handlers.
+
+<u>**Child loggers propagate[^1] messages up to the handlers associated with their ancestor loggers.**</u> Because of this, it is <u>unnecessary to define and configure handlers for all the loggers</u> an application uses. It is sufficient to configure handlers for a top-level logger and create child loggers as needed. (You can, however, turn off propagation by setting the propagate attribute of a logger to False.)
 
 ### Handlers
 
@@ -284,3 +308,6 @@ You can change this by passing a format string to `basicConfig()` with the forma
 ## Using arbitrary objects as messages
 
 ## Optimization
+
+[^1]: verb.宣传；传播；使普及;繁殖，培植（植物）
+
