@@ -281,11 +281,43 @@ Loggers have a concept of <u>effective level</u>. If a level is not explicitly s
 
 ### Handlers
 
+Handler objects are responsible for dispatching the appropriate log messages (based on the log messages’ severity) to the handler’s specified destination. Logger objects can add zero or more handler objects to themselves with an `addHandler()` method. As an example scenario, an application may want to send all log messages to a log file, all log messages of error or higher to stdout, and all messages of critical to an email address. This scenario requires three individual handlers where each handler is responsible for sending messages of a specific severity to a specific location.
 
+The standard library includes quite a few handler types ; the tutorials use mainly `StreamHandler` and `FileHandler` in its examples.
+
+There are very few methods in a handler for application developers to concern themselves with. The only handler methods that seem relevant for application developers who are using the built-in handler objects(that is, not creating custom handlers) are the following configuration methods:
+
+* The `setLevel()` method, just as in logger objects, specifies the lowest severity that will be dispatched to the appropriate destination. <u>*Why are there two `setLevel()` methods?* The level set in the **logger determines which severity of messages it will pass to its handlers**. The level set in each **handler determines which messages that handler will send on**.</u>
+* `setFormatter()` selects a Formatter object for this handler to use.
+* `addFilter()` and `removeFilter()` respectively configure and deconfigure filter objects on handlers.
+
+<u>Application code should not directly instantiate and use instances of Handler.</u> Instead, the Handler class is a base class that defines the interface that all handlers should have and establishes some default behavior that child classes can use (or override).
 
 ### Formatters
 
+Formatter objects configure the final order, structure, and contents of the log message. Unlike the base `logging.Handler` class, application code may instantiate formatter classes, although you could likely subclass the formatter if your application needs special behavior. <u>The constructor takes three optional arguments - **a message format string**, **a date format string** and **a style indicator.**</u>
 
+```python
+logging.Formatter.__init__(fmt=None, datafmt=None, style='%')
+```
+
+If there is no message format string,  the default is to use the raw message. If there is no date format string, the default date format is:
+
+```shell
+%Y-%m-%d %H:%M:%S
+```
+
+with the milliseconds tacked on at the end. The style is one of `%`, `{`, or `$`。 If one of these is not specified, then `%` will be used.
+
+If the style is `%`, the message format string uses `%(<dictionary key>)s` styled string substitution; the possible keys are documented in LogRecord attributes. If the style is `{`, the message format string is assumed to be compatible with `str.format()` (using keyword arguments), while if the style is `$` then the message format string should conform to what is expected by `string.Template.substitute()`.
+
+The following message format string will log the time in a human-readable format, the severity of the message, and the contents of the message, in that order:
+
+```shell
+'%(asctime)s - %(levelname)s - %(message)s'
+```
+
+Formatters use a user-configurable function to convert the creation time of a record to a tuple. By default, `time.localtime()` is used; to change this for a particular formatter instance, set the `converter` attribute of the instance to a function with the same signature as `time.localtime()` or `time.gmtime()`. To change it for all formatters, for example if you want all logging times to be shown in GMT, set the converter attribute in the Formatter class(to `time.gmtime` for GMT display)
 
 ### Configuring Logging
 
