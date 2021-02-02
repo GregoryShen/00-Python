@@ -321,7 +321,148 @@ Formatters use a user-configurable function to convert the creation time of a re
 
 ### Configuring Logging
 
+Programmers can configure logging in three ways:
 
+1. Creating loggers, handlers, and formatters explicitly using Python code that calls the configuration methods listed above.
+2. Creating a logging config file and reading it using `fileConfig()` function.
+3. Creating a dictionary of configuration information and passing it to the `dictConfig()` function.
+
+For the reference documentation on the last two options, see Configuration functions. The following example configures a very simple logger, a console handler, and a simple formatter using Python code:
+
+```python
+import logging
+
+# create logger
+logger = logging.getLogger('simple_example')
+logger.setLevel(logging.DEBUG)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter 这里第二个参数name指的是logger的name
+formatter = logging.Formatter('%(asctime)s - %(name)s- %(levelname)s- %(message)s')
+
+# add formatter to ch
+ch.addFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
+# 'application' code
+logger.debug('debug message')
+logger.info('info message')
+logger.warning('warning message')
+logger.error('error message')
+logger.critical('critical message')
+```
+
+Running this module from the command line produces the following output:
+
+```shell
+$ python simple_logging_module.py
+2005-03-19 15:10:26,618 - simple_example - DEBUG - debug message
+2005-03-19 15:10:26,620 - simple_example - INFO - info message
+2005-03-19 15:10:26,695 - simple_example - WARNING - warn message
+2005-03-19 15:10:26,697 - simple_example - ERROR - error message
+2005-03-19 15:10:26,773 - simple_example - CRITICAL - critical message
+```
+
+The following Python module creates a logger, handler and formatter nearly identical to those in the example listed above, with the only difference being the names of the objects:
+
+```python
+import logging
+import logging.config
+
+logging.config.fileConfig('logging.conf')
+
+# create logger
+logger = logging.getLogger('simpleExample')
+
+# 'application' code
+logger.debug('debug message')
+logger.info('info message')
+logger.warning('warn message')
+logger.error('error message')
+logger.critical('critical message')
+```
+
+Here is the `logging.conf` file:
+
+```ini
+[loggers]
+keys=root,simpleExample
+
+[handlers]
+keys=consoleHandler
+
+[formatters]
+keys=simpleFormatter
+
+[logger_root]
+level=DEBUG
+handlers=consoleHandler
+
+[logger_simpleExample]
+level=DEBUG
+handlers=consoleHandler
+qualname=simpleExample
+propagate=0
+
+[handler_consoleHandler]
+class=StreamHandler
+level=DEBUG
+formatter=simpleFormatter
+args=(sys.stdout,)
+
+[formatter_simpleFormatter]
+format=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+datefmt=
+```
+
+The output is nearly identical to that of the non-config-file-based example:
+
+```shell
+$ python simple_logging_config.py
+2005-03-19 15:38:55,977 - simpleExample - DEBUG - debug message
+2005-03-19 15:38:55,979 - simpleExample - INFO - info message
+2005-03-19 15:38:56,054 - simpleExample - WARNING - warn message
+2005-03-19 15:38:56,055 - simpleExample - ERROR - error message
+2005-03-19 15:38:56,130 - simpleExample - CRITICAL - critical message
+```
+
+You can see that the config file approach has a few advantages over the Python code approach, mainly separation of configuration and code and the ability of noncoders to easily modify the logging properties.
+
+> Warning: The `fileConfig()`  function takes a default parameter, `disable_existing_loggers`, which defaults to `True` for reasons of backward compatibility. This may or may not be what you want, since it will cause any non-root loggers existing before the `fileConfig()` call to be disabled unless they (or an ancestor) are explicitly named in the configuration. Please refer to the reference documentation for more information, and specify `False` for this parameter if you wish.
+>
+> The dictionary passed to `dictConfig()` can also specify a Boolean value with key `disable_existing_loggers`, which if not specified explicitly in the dictionary also defaults to being interpreted as `True`. This leads to the logger-disabling behavior described above, which may not be what you want - in which case, provide the key explicitly with a value of `False`.
+
+Note that the class names referenced in config files need to be either relative to the logging module, or absolute values which can be resolved using normal import mechanisms. Thus, you could use either `WatchedFileHandler` (relative to the logging module) or `mypackage.mymodule.MyHandler` (for a class defined in package `mypackage` and module `mymodule`, where `mypackage` is available on the Python import path).
+
+In Python 3.2, a new means of configuring logging has been introduced, using dictionaries to hold configuration information. This provides a superset of the functionality of the config-file-based approach outlined above, and is the recommended configuration method for new applications and deployments. Because a Python dictionary is used to hold configuration information, and since you can populate[^2] that dictionary using different means, you have more options for configuration. For example, you can use a configuration file in JSON format, or, if you have access to YAML processing functionality, a file in YAML format, to populate the configuration dictionary. Or, of course, you can construct the dictionary in Python code, receive it in pickled form over a socket, or use whatever approach makes sense for your application.
+
+Here’s an example of the same configuration as above, in YAML format for the new dictionary-based approach:
+
+```yaml
+version: 1
+formatters:
+  simple:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+loggers:
+  simpleExample:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+root:
+  level: DEBUG
+  handlers: [console]
+```
 
 ### What happens if no configuration is provided
 
@@ -342,4 +483,6 @@ Formatters use a user-configurable function to convert the creation time of a re
 ## Optimization
 
 [^1]: verb.宣传；传播；使普及;繁殖，培植（植物）
+
+[^2]:  填充，占据
 
