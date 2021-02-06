@@ -466,15 +466,64 @@ root:
 
 ### What happens if no configuration is provided
 
+If no logging configuration is provided, it is possible to have a situation where a logging event needs to be output, but no handlers can be found to output the event. The behavior of the logging package in these circumstances is dependent on the Python version.
 
+For versions of Python prior to 3.2, the behavior is as follows:
+
+* If `logging.raiseExceptions` is `False` (production mode), the event is silently dropped.
+* If `logging.raiseExceptions` is `True` (development mode), a message ’No handlers could be found for logger X.Y.Z’ is printed once.
+
+In Python 3.2 and later, the behavior is as follows:
+
+* The event is output using a ‘handler of last resort’, stored in `logging.lastResort`. This internal handler is not associated with any logger, and acts like a `StreamHandler` which writes the event description message to the current value of `sys.stderr` (therefore respecting any redirections which may be in effect). No formatting is done on the message - just the bare event description message is printed. The handler’s level is set to `WARNING`, so all events at this and greater severities will be output.
+
+To obtain the pre-3.2 behavior, `logging.lastResort` can be set to `None`.
 
 ### Configuring Logging for a Library
 
+When developing a library which uses logging, you should take care to document how the library uses logging - for example, the names of loggers used. Some consideration also needs to be given to its logging configuraion. If the using application does not use logging, and library code makes logging calls, then (as described in the previous section) events of severity WARNING and greater will be printed to `sys.stderr`. This is regarded as the best default behavior.
 
+If for some reason you don’t want these messages printed in the absence of any logging configuration, you can attach a do-nothing handler to the top-level logger for your library. This avoids the message being printed, since a handler will always be found for the library’s events: it just doesn’t produce any output. If the library user configures logging for application use, presumably that configuration will add some handlers, and if levels are sutiably configured then logging calls made in library code will send output to those handlers, as normal.
+
+A do-nothing handler is included in the logging package: `NullHandler` (since Python 3.1). An instance of this handler could be added to the top-level logger of the logging namespace used by the library (if you want to prevent your library’s logged events being output to `sys.stderr` in the absence of logging configuration). If all logging by a library foo is done using loggers with names matching `foo.x`, `foo.x.y`, etc. then the code:
+
+```python
+import logging
+logging.getLogger('foo').addHandler(logging.NullHandler())
+```
+
+should have the desired effect. If an organisation produces a number of libraries, then the logger name specified can be ‘orgname.foo’ rather than just ‘foo’.
+
+> Note: It is strongly advised that you do not add any handlers other than `NullHandler` to your library’s loggers. This is because the configuration of handlers is the prerogative of the application developer who uses your library. The application developer knows their target audience and what handlers are most appropriate for their application: if you add handlers ‘under the hood’, you might will interfere with their ability to carry out unit tests and deliver logs which suit their requirements.
 
 ## Logging Levels
 
+The numeric values of logging levels are given in the following table. These are primarily of interest if you want to define your own levels, and need them to have specific values relative to the predefined levels. If you define a level with the same numeric value, it overwrites the predefined value; the predefined name is lost.
+
+| Level    | Numeric value |
+| -------- | ------------- |
+| CRITICAL | 50            |
+| ERROR    | 40            |
+| WARNING  | 30            |
+| INFO     | 20            |
+| DEBUG    | 10            |
+| NOTSET   | 0             |
+
+Levels can also be associated with loggers, being set either by the developer or through loading a saved logging configuraion. When a logging method is called on a logger, the logger compares its own level with the level associated with the method call. If the logger’s level is higher than the method call’s, no logging message is actually generated. This is the basic mechanism controlling the verbosity of logging output.
+
+Logging messages are encoded as instances of the `LogRecord` class. When a logger decides to actually log an event, a `LogRecord` instance is created from the logging message.
+
+Logging messages are subjected to a dispatch mechanism through the use of handlers, which are instances of subclass of the Handler class. Handlers are responsible for ensuring that a logged message (in the form of a `LogRecord`) ends up in a particualr location (or set of locations) which is useful for the target audience for that message (such as end users, support desk staff, system administrators, developers). Handlers are passed `LogRecord` instances intended for particular destinations. Each logger can have zero, one or more handlers associated with it (via the `addHandler()` method of Logger). In addition to any handlers directly associated with a logger, all handlers associated with all ancestors of the logger are called to dispatch the message (unless the propagate flag for a logger is set to a false value, at which point the passing to ancestor handlers stops).
+
+Just as for loggers, handlers can have levels associated with them. A handler’s level acts as a filter in the same way as a logger’s level does. If a handler decides to actually dispatch an event, the `emit()` method is used to send the message to its destination. Most user-defined subclass of Handler will need to override this `emit()`.
+
+### Custom Levels
+
+Defining your own levels is possible, but should not be necessary, as the existing levels have been chosen on the basis of practical experience. However, if you are convinced that you need custom levels, great care should be exercised when doing this, and it is possibly a very bad idea to defind custom levels if you are developing library. That’s because if multiple library authors all define their own custom levels, there is a chance that the logging output from such multiple libraries used together will be difficult for the using developer to control and/or interpret, because a given numeric value might mean different things for different libraries.
+
 ## Useful Handlers
+
+
 
 ## Exceptions raised during logging
 
