@@ -475,24 +475,24 @@ For versions of Python prior to 3.2, the behavior is as follows:
 
 In Python 3.2 and later, the behavior is as follows:
 
-* The event is output using a ‘handler of last resort’, stored in `logging.lastResort`. This internal handler is not associated with any logger, and acts like a `StreamHandler` which writes the event description message to the current value of `sys.stderr` (therefore respecting any redirections which may be in effect). No formatting is done on the message - just the bare event description message is printed. The handler’s level is set to `WARNING`, so all events at this and greater severities will be output.
+* The event is output using a ‘handler of <u>last resort</u>[^3]’, stored in `logging.lastResort`. This internal handler is not associated with any logger, and acts like a `StreamHandler` which writes the event description message to the current value of `sys.stderr` (therefore respecting any redirections which may be <u>in effect</u>[^4]). No formatting is done on the message - just the bare event description message is printed. The handler’s level is set to `WARNING`, so all events at this and greater severities will be output.
 
 To obtain the pre-3.2 behavior, `logging.lastResort` can be set to `None`.
 
 ### Configuring Logging for a Library
 
-When developing a library which uses logging, you should take care to document how the library uses logging - for example, the names of loggers used. Some consideration also needs to be given to its logging configuraion. If the using application does not use logging, and library code makes logging calls, then (as described in the previous section) events of severity WARNING and greater will be printed to `sys.stderr`. This is regarded as the best default behavior.
+When developing a library which uses logging, you should take care to document how the library uses logging - for example, the names of loggers used. Some consideration also needs to be given to its logging configuration. If the using application does not use logging, and library code makes logging calls, then (as described in the previous section) events of severity WARNING and greater will be printed to `sys.stderr`. This is regarded as the best default behavior.
 
-If for some reason you don’t want these messages printed in the absence of any logging configuration, you can attach a do-nothing handler to the top-level logger for your library. This avoids the message being printed, since a handler will always be found for the library’s events: it just doesn’t produce any output. If the library user configures logging for application use, presumably that configuration will add some handlers, and if levels are sutiably configured then logging calls made in library code will send output to those handlers, as normal.
+If for some reason you don’t want these messages printed in the absence of any logging configuration, you can attach a do-nothing handler to the top-level logger for your library. This avoids the message being printed, since a handler will always be found for the library’s events: it just doesn’t produce any output. If the library user configures logging for application use, presumably that configuration will add some handlers, and if levels are suitably configured then logging calls made in library code will send output to those handlers, as normal.
 
-A do-nothing handler is included in the logging package: `NullHandler` (since Python 3.1). An instance of this handler could be added to the top-level logger of the logging namespace used by the library (if you want to prevent your library’s logged events being output to `sys.stderr` in the absence of logging configuration). If all logging by a library foo is done using loggers with names matching `foo.x`, `foo.x.y`, etc. then the code:
+A do-nothing handler is included in the logging package: `NullHandler` (since Python 3.1). An instance of this handler could be added to the top-level logger of the logging namespace used by the library (if you want to prevent your library’s logged events being output to `sys.stderr` in the absence of logging configuration). If all logging by a library *foo* is done using loggers with names matching `foo.x`, `foo.x.y`, etc. then the code:
 
 ```python
 import logging
 logging.getLogger('foo').addHandler(logging.NullHandler())
 ```
 
-should have the desired effect. If an organisation produces a number of libraries, then the logger name specified can be ‘orgname.foo’ rather than just ‘foo’.
+should have the desired effect. If an organization produces a number of libraries, then the logger name specified can be ‘`orgname.foo`’ rather than just ‘foo’.
 
 > Note: It is strongly advised that you do not add any handlers other than `NullHandler` to your library’s loggers. This is because the configuration of handlers is the prerogative of the application developer who uses your library. The application developer knows their target audience and what handlers are most appropriate for their application: if you add handlers ‘under the hood’, you might will interfere with their ability to carry out unit tests and deliver logs which suit their requirements.
 
@@ -509,29 +509,83 @@ The numeric values of logging levels are given in the following table. These are
 | DEBUG    | 10            |
 | NOTSET   | 0             |
 
-Levels can also be associated with loggers, being set either by the developer or through loading a saved logging configuraion. When a logging method is called on a logger, the logger compares its own level with the level associated with the method call. If the logger’s level is higher than the method call’s, no logging message is actually generated. This is the basic mechanism controlling the verbosity of logging output.
+Levels can also be associated with loggers, being set either by the developer or through loading a saved logging configuration. When a logging method is called on a logger, the logger compares its own level with the level associated with the method call. If the logger’s level is higher than the method call’ s, no logging message is actually generated. This is the basic mechanism controlling the verbosity of logging output.
 
 Logging messages are encoded as instances of the `LogRecord` class. When a logger decides to actually log an event, a `LogRecord` instance is created from the logging message.
 
-Logging messages are subjected to a dispatch mechanism through the use of handlers, which are instances of subclass of the Handler class. Handlers are responsible for ensuring that a logged message (in the form of a `LogRecord`) ends up in a particualr location (or set of locations) which is useful for the target audience for that message (such as end users, support desk staff, system administrators, developers). Handlers are passed `LogRecord` instances intended for particular destinations. Each logger can have zero, one or more handlers associated with it (via the `addHandler()` method of Logger). In addition to any handlers directly associated with a logger, all handlers associated with all ancestors of the logger are called to dispatch the message (unless the propagate flag for a logger is set to a false value, at which point the passing to ancestor handlers stops).
+Logging messages are subjected to a dispatch mechanism through the use of handlers, which are instances of subclass of the Handler class. Handlers are responsible for ensuring that a logged message (in the form of a `LogRecord`) ends up in a particular location (or set of locations) which is useful for the target audience for that message (such as end users, support desk staff, system administrators, developers). Handlers are passed `LogRecord` instances intended for particular destinations. Each logger can have zero, one or more handlers associated with it (via the `addHandler()` method of Logger). In addition to any handlers directly associated with a logger, all handlers associated with all ancestors of the logger are called to dispatch the message (unless the propagate flag for a logger is set to a false value, at which point the passing to ancestor handlers stops).
 
 Just as for loggers, handlers can have levels associated with them. A handler’s level acts as a filter in the same way as a logger’s level does. If a handler decides to actually dispatch an event, the `emit()` method is used to send the message to its destination. Most user-defined subclass of Handler will need to override this `emit()`.
 
 ### Custom Levels
 
-Defining your own levels is possible, but should not be necessary, as the existing levels have been chosen on the basis of practical experience. However, if you are convinced that you need custom levels, great care should be exercised when doing this, and it is possibly a very bad idea to defind custom levels if you are developing library. That’s because if multiple library authors all define their own custom levels, there is a chance that the logging output from such multiple libraries used together will be difficult for the using developer to control and/or interpret, because a given numeric value might mean different things for different libraries.
+Defining your own levels is possible, but should not be necessary, as the existing levels have been chosen on the basis of practical experience. However, if you are convinced that you need custom levels, great care should be exercised when doing this, and it is possibly a very bad idea to define custom levels if you are developing library. That’s because if multiple library authors all define their own custom levels, there is a chance that the logging output from such multiple libraries used together will be difficult for the using developer to control and/or interpret, because a given numeric value might mean different things for different libraries.
 
 ## Useful Handlers
 
+In addition to the base Handler class, many useful subclasses are provided:
 
+1. `StreamHandler` instances send messages to streams (file-like objects).
+2. `FileHandler` instances send messages to disk files.
+3. `BaseRotatingHandler` is the base class for handlers that rotate log files at a certain point. It is not meant to be instantiated directly. Instead, use `RotatingFileHandler` or `TimedRotatingFileHandler`
+4. `RotatingFileHandler`  instances send messages to disk files, with support for maximum log file sizes and log file rotation.
+5. `TimedRotatingFileHandler`  instances send messages to disk files, rotating the log file at certain timed intervals.
+6. `SocketHandler` instances send messages to TCP/IP sockets. Since 3.4, Unix domain sockets are also supported.
+7. `Datagramhandler` instances send messages to UDP sockets. Since 3.4, Unix domain sockets are also supported.
+
+…其他的感觉用不到。。先不写了。
+
+The `NullHandler`, `StreamHandler` and  `FileHandler` classes are defined in the core logging package. The other handlers are defined in a sub-module, `logging.handlers`. (There is also another sub-module, `logging.config`, for configuration functionality.)
+
+Logged messages are formatted for presentation through instances of the Formatter class. They are initialized with a format string suitable for use with the % operator and a dictionary.
+
+For formatting multiple messages in a batch, instances of `BufferingFormatter` can be used. In addition to the format string (which is applied to each message in the batch), there is provision for header and trailer format strings.
+
+When filtering based on logger level and/or handler level is not enough, instances of Filter can be added to both Logger and Handler instances (through their `addFilter()` method). Before deciding to process a message further, both loggers and handlers consult all their filters for permission. If any filter returns a false value, the message is not processed further.
+
+The basic Filter functionality allows filtering by specific logger name. If this feature is used, messages sent to the named logger and its children are allowed through the filter, and all other dropped.
 
 ## Exceptions raised during logging
 
+The logging package is designed to swallow exceptions which occur while logging in production. This is so that errors which occur while handling logging events - such as logging misconfiguration, network or other similar errors - do not cause the application using logging to terminate prematurely[^5].
+
+`SystemExit` and `KeyboardInterrupt` exceptions are never swallowed. Other exceptions which occur during the `emit()` method of a Handler subclass are passed to its `handleError()` method.
+
+The default implementation of `handleError()` in Handler checks to see if a module-level variable, `raiseExceptions`, is set. If set, a traceback is printed to `sys.stderr`. If not set, the exception is swallowed.
+
+> Note: The default value of `raiseExceptions` is `True`. This is because during development, you typically want to be notified of any exceptions that occur. It’s advised that you set `raiseExceptions` to `False` for production usage.
+
 ## Using arbitrary objects as messages
 
+In the preceding sections and examples, it has been assumed that the message passed when logging the event is a string. However, this is not the only possibility.  You can pass an arbitrary object as a message, and its `__str__()` method will be called when the logging system needs to convert it to a string representation. In fact, if you want to, you can avoid computing a string representation altogether - for example, the `SocketHandler` emits an event by pickling it and sending it over the wire.
+
 ## Optimization
+
+Formatting of message arguments is deferred until it cannot be avoided. However, computing the arguments passed to the logging method can also be expensive, and you may want to avoid doing it if the logger will just throw away your event. To decide what to do, you can call the `isEnableFor()` method which takes a level argument and returns true if the event would be created by the Logger for that level of call. You can write code like this:
+
+```python
+if logger.isEnabledFor(logging.DEBUG):
+    logger.debug('Message with %s, %s', expensive_func1(), expensive_func2())
+```
+
+so that if the logger’s threshold is set above DEBUG, the calls to `expensive_func1()`and `expensive_func2()` are never made.
+
+> Note: In some cases,  `isEnabledFor()` can itself be more expensive than you’d like (e.g. for deeply nested loggers where an explicit level is only set high up in the logger hierarchy). In such cases (or if you want to avoid calling a method in tight loops), you can cache the result of a call to `isEnabledFor()` in a local or instance variable, and use that instead of calling the method each time. Such a cached value would only need to be recomputed when the logging configuration changes dynamically while the application is running (which is not all that common).
+
+There are other optimizations which can be made for specific applications which need more precise control over what logging information is collected. Here’s a list of things you can do to avoid processing during logging which you don’t need:
+
+| What you don’t want to collect                | How to avoid collecting it                                   |
+| --------------------------------------------- | ------------------------------------------------------------ |
+| Information about where calls were made form. | Set `logging._srcfile` to None. This avoids calling `sys._getframe()`, which may help to speed up your code in environments like PyPy(which can’t speed up code that uses `sys._getframe()`), if and when PyPy supports Python 3.x. |
+| Threading information.                        | Set `logging.logThreads` to 0                                |
+| Process information.                          | Set `logging.logProcesses` to 0                              |
+
+Also note that the core logging module only includes the basic handlers. If you don’t import `logging.handlers` and `logging.config`, they won’t take up any memory.
 
 [^1]: verb.宣传；传播；使普及;繁殖，培植（植物）
 
 [^2]:  填充，占据
 
+[^3]: 最后一招
+[^4]: 有效；实际上，事实上
+[^5]: 过早地，贸然地
