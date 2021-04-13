@@ -3,6 +3,112 @@
 
 
 
+006. 统计字符串每个单词出现的次数
+def word_amount(sentence):
+    """计算句子的单词数量
+
+    计算句子中的单词数量，并返回结果字典
+    :param sentence: 句子对象
+    :return: 计算结果字典
+    """
+    # 使用 split 方法切割句子
+    split_list = sentence.split()
+    dict_result = {}
+    # 通过遍历列表，判断每个值是否在新字典的键中，如果存在则键值加1，不存在则设为1
+    for word_name in split_list:
+        if word_name not in dict_result.keys():
+            dict_result[word_name] = 1
+        else:
+            dict_result[word_name] += 1
+    return dict_result
+
+
+if __name__ == '__main__':
+    sentence = "I can because i think i can"
+    dict_result = word_amout(sentence)
+    print(dict_result)
+
+# 第二种方法， count() 用来统计字符串中word 出现的次数，count(sub, start=None, end=None)
+# 有三个参数，依次是待统计字符，字符索引开头，索引结尾
+result = {word: sentence.split().count(word) for word in set(sentence.split())}
+
+# 第三种解法，利用 collections 里的 Counter
+from collections import Counter
+
+sentence = "I can because i think i can"
+counts = Counter(sentence.split())
+print(counts)
+
+
+031. 将"hello world"转换为首字母大写"Hello World"
+def first_capital(change_sentence: str) -> str:
+    """句子所有单词首字母大写
+
+    将句子的首字母大写并返回
+    :param change_sentence: 需要转换的句子
+    :return: 返回转换后的字符串
+    """
+    # 将句子使用 split 切割成list
+    split_list = change_sentence.split()
+    # 遍历列表长度值
+    for i in range(len(split_list)):
+        # 使用 capitalize() 函数将每个单词首字母转为大写
+        split_list[i] = split_list[i].capitalize()
+        # 也可以使用 upper() 方法, upper() 可以把所有的小写字母改成大写，lower()是转小写
+        # split_list[i] = split_list[i][0].upper() +split_list[i][1:].lower()
+    # 使用 join 将列表转为字符串
+    split_list = " ".join(split_list)
+    return split_list
+
+if __name__ == '__main__':
+    change_sentence = "hello world"
+    print(first_capital("hello world"))
+    # 有需要的同学可以使用匿名函数、列表推导式和map方法一行写出以上代码
+    print(" ".join(list(map(lambda word: word.capitalize(), change_sentence.split()))))
+
+
+032. 如何检测字符串中只含有数字?
+isdigit() 方法检测字符串是否只由数字组成
+
+demo_str = "123456"
+print(demo_str.isdigit())           # 输出 True
+demo_str = "This is string example...wow!!!"
+print(demo_str.isdigit())           # 输出 False
+
+
+033. 将字符串"ilovechina"进行反转
+# 第一种方法，使用字符串切片
+demo_str = "ilovechina"
+print(demo_str[::-1])
+
+# 第二种方法，使用列表的reverse 方法
+list_str = list(demo_str)
+list_str.reverse()
+print("".join(list_str))
+
+# 第三种方法：reduce 累加法
+# 具体步骤是将前两个字母初始化添加到lambda 函数中，得到的结果再与下一个字母做累加直到结束
+from functools import reduce
+print(reduce(lambda x,y: y+x, demo_str))
+
+# 使用栈，先进后出
+# 遍历循环，略
+
+036. 获取字符串“123456”最后的两个字符。
+demo_str = "123456"
+print(demo_str[-2:])
+
+
+037. 一个编码为 GBK 的字符串 S，要将其转成 UTF-8 编码的字符串，应如何操作？
+import chardet
+
+demo_str = "demo string".encode("gbk")
+demo_str = demo_str.decode('gbk').encode('utf-8')
+print(demo_str)
+# chardet.detect()可以检测编码格式
+print(chardet.detect(demo_str))
+
+
 117. dir()是干什么用的？
 dir() 函数不带参数时, 返回当前范围内的变量、方法和定义的类型列表
 带参数时, 返回参数的属性、方法列表
