@@ -266,17 +266,89 @@ https://www.cnblogs.com/tkqasn/p/5977653.html
 
 
 
-你知道和不知道的Python字典都在这里！！
+# [你知道和不知道的Python字典都在这里！！](https://mp.weixin.qq.com/s/36_gHzFKpQ9rIscFOfUboQ)
 
-https://mp.weixin.qq.com/s/36_gHzFKpQ9rIscFOfUboQ
+本文从6个方面介绍字典，包括：字典创建的5种方式、访问字典元素、字典元素添加、字典元素删除、字典的其他方法、序列解包（拆包）
+
+## 字典
+
+字典是“键值对”的无序可变序列，字典中的每个元素都是一个“键值对”，包含：“键对象”和“值对象”。可以通过“键对象”实现快速获取、删除、更新对应的“值对象”。
+
+列表中我们通过“下标数字”找到对应的对象，字典中通过“键对象”找到对应的“值对象”。
+
+“键”：是任意的不可变数据，比如：整数、浮点数、字符串、元组。但是：列表、字典、集合这些可变对象，不能作为“键”。并且“键”不可重复。
+
+“值”：可以是任意的数据，并且可以重复。
+
+空字典表示方式：{}或dict()
+
+## 创建字典
+
+### 方式一： `{key:value}`
+
+### 方式二： `dict()`
+
+### 方式三： `dict(key=value)`
+
+### 方式四： 字典推导式
+
+### 方式五： `fromkeys()`
+
+```python
+# 没有指定 value， 默认 None
+dict6 = dict.fromkeys(['k1', 'k2', 'k3'])
+print(dict6)  # {'k1': None, 'k2': None, 'k3': None}
+# 指定 value
+dict7 = dict.fromkeys(['k1', 'k2', 'k3'], 'value')
+print(dict7)  # {'k1': 'value', 'k2': 'value', 'k3': 'value'}
+```
 
 
 
+## 访问字典元素
+
+1. 通过[键]获得值。若键不存在，则抛出异常
+2. 
+
+## 字典元素添加
 
 
 
+## 字典元素删除
 
 
+
+## 字典的其他方法
+
+
+
+## 序列解包（拆包）
+
+序列解包可以用于元组、列表、字典，可以让我们方便的对多个变量赋值
+
+```python
+>>> x, y, z = (10, 20, 30)		# 换成列表也可
+>>> x
+10
+>>> y
+20
+>>> z
+30
+```
+
+序列解包用于字典时，默认是对“键”进行操作；如果需要对键值对操作，则需要使用`items()`; 如果需要对“值”进行操作，则需要使用`values()`
+
+```python
+di = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
+a, b, c = di
+print(a, b, c)		# name age job
+
+a, b, c = di.items()
+print(a)		# ('name', 'Lucy')
+
+a, b, c = di.values()
+print(a)		# Lucy
+```
 
 
 
