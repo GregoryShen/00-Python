@@ -1,0 +1,175 @@
+高阶函数
+-----------------------------------------------------------------------------
+map/reduce
+01. 解释 map 函数的用法
+02. 有一个函数 f(x)=x^2, 使用map函数将这个函数作用在list
+   [1, 2, 3, 4, 5, 6, 7, 8, 9]上并解释含义
+03. 不用 map 函数实现上述过程
+04. 把2中的list的所有元素用一行代码都转成字符串
+05. 解释 reduce 的用法
+06. 使用 reduce 对 [1, 3, 5, 7, 9] 求和
+07. 使用 reduce 对 13579 求和
+08. 写一个把字符串转化为整数的函数
+09. 利用 map()函数，把用户输入的不规范的英文名字，变为首字母大写，其他小写的规范名字。
+    输入：['adam', 'LISA', 'barT']，输出：['Adam', 'Lisa', 'Bart']：
+    def normalize(name):
+        pass
+10. Python提供的sum()函数可以接受一个list并求和，请编写一个prod()函数，可以接受一
+    个list并利用reduce()求积：
+    from functools import reduce
+    def prod(L):
+        pass
+11. 利用map和reduce编写一个str2float函数，把字符串'123.456'转换成浮点数123.456
+    from functools import reduce
+    def str2float(s):
+        pass
+-----------------------------------------------------------------------------
+filter
+
+-----------------------------------------------------------------------------
+sorted
+1. 排序算法的核心是什么?
+2. 如果是字符串或字典, 应该怎样比较大小?
+3. 有L= [36, 5, -12, 9, -21], 请按绝对值大小排序
+4. sorted 和 列表的sort方法有何区别?
+5. 有 L= ['bob', 'about', 'Zoo', 'Credit'], 使用sorted默认排序是依照什么规则?
+   如果想要忽略大小写排序应该怎样做? 如果想要反向排序应该怎么办?
+6. sorted 是高阶函数吗? 用 sorted 排序的关键在于什么?
+7. 假设我们用一组tuple表示学生名字和成绩：L = [('Bob', 75), ('Adam', 92), ('Bart', 66), ('Lisa', 88)]
+请用sorted()对上述列表分别按名字排序, 再按成绩从高到低排序.
+-----------------------------------------------------------------------------
+返回函数
+
+-----------------------------------------------------------------------------
+匿名函数
+1. 匿名函数是什么?
+2. 以一行代码实现在数字1~9 中带入 f(x) = x^2 的函数
+3. 还原2中匿名函数为常规函数
+4. 匿名函数的格式是怎样的?
+5. 匿名函数有什么限制?
+6. 使用匿名函数有什么好处?
+7. 请用匿名函数改造下面的代码:
+def is_odd(n):
+    return n % 2 == 1
+L = list(filter(is_odd, range(1, 20)))
+-----------------------------------------------------------------------------
+装饰器
+01. 函数是什么, 函数对象可以被赋值给变量吗? 如果可以被赋值给变量这说明什么呢?
+函数是对象, 可以被赋值给变量, 说明通过变量也能调用该函数, 也就说, 可以把函数作为参数传递
+
+02. 如何获取一个函数的名字?
+{函数名}.__name__
+
+03. 装饰器的定义
+在代码运行期间动态增加功能的方式, 但又不改变原函数的定义, 称之为“装饰器”
+
+04. 装饰器的本质是什么
+装饰器的本质就是一个返回函数的高阶函数
+
+05. 定义一个装饰器log, 使得在调用now函数的时候打印“call now():"的日志
+def log(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        print("call {}():".format(func.__name__))
+        return func(*args, **kwargs)
+    return wrapper
+
+@log
+def now():
+    print('2015-3-25')
+打印结果为:
+>>> now()
+call now():
+2015-3-25
+
+06. 把@log放在now函数的定义处, 相当于什么, 并对这句话进行解释
+相当于 now = log(now)
+解释: 由于 log 是一个装饰器, 返回一个函数, 所以原来的 now() 函数仍然存在,
+只是现在同名的 now 变量指向了新的函数, 于是调用 now() 将执行新函数,
+即在 log() 函数中返回的 wrapper 函数
+
+07. 再定义一个装饰器log,要求装饰器可以自定义log的文本
+def log(text):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            print("{} {}():".format(text, func.__name__))
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+@log('execute')
+def now():
+    print('2015-3-25')
+执行结果为:
+>>> now()
+execute now():
+2015-3-25
+
+08. 对于上题把@log放在now函数的定义处, 相当于什么, 并对这句话进行解释
+相当于 now = log('execute')(now)
+解释: 首先执行 log('execute'), 返回 decorator 函数, 再调用 decorator 函数
+参数是 now 函数, 返回的最终值是 wrapper 函数
+
+09. 为什么要引入functools.wraps
+因为函数也是对象, 它有 __name__ 等属性, 但是经过装饰器装饰之后的函数他们的 __name__
+属性已经从原来的'now'变成了'wrapper'(因为返回的那个 wrapper() 函数名字就是 'warpper'),
+所以,需要把原始函数的 __name__ 等属性复制到 wrapper() 函数中, 否则, 有些依赖函数
+签名的代码执行就会出错
+
+10. 设计一个装饰器metric, 它可作用于任何函数上, 并打印该函数的执行时间
+import functools
+import time
+
+def metric(fn):
+    @functools.wraps(fn)
+    def wrapper(*args, **kw):
+        start_time = time.time()
+        func = fn(*args, **kw)
+        end_time = time.time()
+        print('%s executed in %s ms' % (fn.__name__, end_time - start_time))
+        return func
+    return wrapper
+
+11. 写出一个@log的decorator，使它既支持：
+@log
+def f():
+    pass
+又支持：
+@log('execute')
+def f():
+    pass
+
+import functools
+
+def log(name):
+    if callable(name):
+        @functools.wraps(name)
+        def wrapper(*args, **kw):
+            print('begin call', name.__name__)
+            f = name(*args, **kw)
+            print('end call', name.__name__)
+            return f
+        return wrapper
+    else:
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print('begin call', name)
+                f = func(*args, **kwargs)
+                print('end call', name)
+                return f
+            return wrapper
+        return decorator
+
+思路:
+装饰器 @log 不带参数的情况下，实际上是直接调用 f = log(f)
+装饰器 @log 带参数的情况下，实际上是调用 f = log(text)(f)
+f = log(f) 执行流程(不带参数)：
+log(f)-->wrapper= f
+f = log(text)(f) 执行流程(包含参数):
+log(text)--> decorator
+log(text)(f)--> decorator(f)--> wrapper = f
+因此，我们需要在装饰器 @log 内部确定传入参数是否为函数，callable() 函数用来判断一个对象是否为函数。
+如果是函数，就表示 @log 不带参数，直接返回 decorator(f) 相当于返回了函数对象 wrapper
+如果不是函数，就表示 @log 带参数，返回 decorator 函数对象，让装饰器去执行 f = log(text)(f) 操作，执行流程就是上面那个。
