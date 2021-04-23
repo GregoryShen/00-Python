@@ -1,4 +1,4 @@
-[廖雪峰：使用dict和set](https://www.liaoxuefeng.com/wiki/1016959663602400/1017104324028448)
+# [廖雪峰：使用dict和set](https://www.liaoxuefeng.com/wiki/1016959663602400/1017104324028448)
 
 Python内置了字典：dict的支持，dict全称dictionary， 在其他语言中也称为map，使用键-值（key-value）存储，具有极快的查找速度
 
@@ -38,7 +38,7 @@ dict的key必须是不可变对象，因为dict根据key来计算value的存储�
 
 要保证hash的正确性，作为key的对象就不能变。在Python中，字符串，整数等都是不可变的，而list是可以变的，就不能作为key
 
-#### set
+## set
 
 set和dict类似，也是一组key的组合，但不存储value。由于key不能重复，所以，在set中，没有重复的key
 
@@ -73,7 +73,7 @@ set和dict的唯一区别仅在于没有存储对应的value，但是，set的�
 
 对于不变对象来说，调用对象自身的任意方法，也不会改变该对象自身的内容。相反，这些方法会创建新的对象并返回，这样，就保证了不可变对象本身永远是不可变的
 
-[Python3 字典](https://www.runoob.com/python3/python3-dictionary.html)
+## [Python3 字典](https://www.runoob.com/python3/python3-dictionary.html)
 
 字典是另一种可变容器模型，且可存储任意类型对象
 
