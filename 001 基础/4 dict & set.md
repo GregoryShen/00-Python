@@ -280,17 +280,57 @@ https://www.cnblogs.com/tkqasn/p/5977653.html
 
 “值”：可以是任意的数据，并且可以重复。
 
-空字典表示方式：{}或dict()
+空字典表示方式：`{}`或`dict()`
 
 ## 创建字典
 
 ### 方式一： `{key:value}`
 
+```python
+# {key: value}
+
+dict1 = {'one': 1, 'two': 2, 'three': 3}
+print(dict1)
+```
+
 ### 方式二： `dict()`
+
+```python
+# dict(zip(keys, values))
+# 或 dict([(k, v), (k, v)])
+# 或 dict(((k, v), (k, v)))
+
+>>> k = ['one', 'two', 'three']
+>>> v = [1, 2, 3]
+>>> dict2 = dict(zip(k, v))
+>>> print(dict2)
+{'one': 1, 'two': 2, 'three': 3}
+
+>>> dict3 = dict([('one', 1), ('two', 2), ('three', 3)])
+>>> print(dict3)
+{'one': 1, 'two': 2, 'three': 3}
+>>> dict3 = dict((('one', 1), ('two', 2), ('three', 3)))
+>>> print(dict3)
+{'one': 1, 'two': 2, 'three': 3}
+```
 
 ### 方式三： `dict(key=value)`
 
+```python
+>>> dict4 = dict(one=1, two=2, three=3)
+>>> print(dict4)
+{'one': 1, 'two': 2, 'three': 3}
+```
+
 ### 方式四： 字典推导式
+
+```python
+>>> lst1 = ['one', 'two', 'three']
+>>> lst2 = [1, 2, 3]
+>>> dict5 = {lst1[i]: lst2[i] for i in range(len(lst1))}
+>>> print(dict5)
+{'one': 1, 'two': 2, 'three': 3}
+```
 
 ### 方式五： `fromkeys()`
 
@@ -303,8 +343,6 @@ dict7 = dict.fromkeys(['k1', 'k2', 'k3'], 'value')
 print(dict7)  # {'k1': 'value', 'k2': 'value', 'k3': 'value'}
 ```
 
-
-
 ## 访问字典元素
 
 1. 通过[键]获得值。若键不存在，则抛出异常
@@ -316,7 +354,63 @@ print(dict7)  # {'k1': 'value', 'k2': 'value', 'k3': 'value'}
 
 ## 字典元素删除
 
+### `pop()`
 
+删除指定键值对, 并返回对应的“值对象”.
+
+```python
+>>> a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
+>>> b = a.pop('age')
+>>> print(b)
+18
+>>> print(a)
+{'name': 'Lucy', 'job': 'programmer'}
+```
+
+### `popitem()`
+
+随机删除一个键值对,并返回. 
+
+```python
+>>> a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
+>>> b = a.popitem()
+>>> print(b)
+('job', 'programmer')
+```
+
+若想一个接一个地移除并处理项, 这个方法就非常有效.
+
+```python
+>>> a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
+>>> for i in range(len(a)):
+...     a.popitem()
+...
+('job', 'programmer')
+('age', 18)
+('name', 'Lucy')
+>>> print(a)
+{}
+```
+
+### `clear()`
+
+删除所有键值对
+
+```python
+>>> a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
+>>> a.clear()
+>>> print(a)
+{}
+```
+
+### `del`
+
+```python
+>>> a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
+>>> del a['name']
+>>> print(a)
+{'age': 18, 'job': 'programmer'}
+```
 
 ## 字典的其他方法
 
