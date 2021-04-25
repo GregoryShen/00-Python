@@ -345,10 +345,54 @@ print(dict7)  # {'k1': 'value', 'k2': 'value', 'k3': 'value'}
 
 ## 访问字典元素
 
-1. 通过[键]获得值。若键不存在，则抛出异常
-2. 
+1. 通过[键]获得“值”。若键不存在，则抛出异常
+
+	
+
+2. 通过 `get()`方法获得“值”。优点是: 指定键不存在，返回 None；也可以设定指定键不存在时默认返回的对象。推荐使用`get()`获取“值对象”。
+
+	
+
+3. 列出所有的键值对
+
+	
+
+4. 列出所有的键，列出所有的值
+
+	
+
+5. 检测一个“键”是否在字典中
+
+	
 
 ## 字典元素添加
+
+给字典新增“键值对”，如果“键”已经存在，则覆盖旧的键值对；如果“键”不存在，则新增”键值对“
+
+
+
+### `update()`
+
+
+
+### `setdefault(key, default)`
+
+```python
+# setdefault(key, default)
+# 如果 default 省略，向字典中添加了 key: None
+# 如果 default 未省略，则向字典中添加 key: default
+>>> dict1 = {"name": "张三", "age": 18, "score": 100, "hobby": "篮球"}
+>>> print(dict1)
+{'name': '张三', 'age': 18, 'score': 100, 'hobby': '篮球'}
+>>> dict1.setdefault("111")
+>>> print(dict1)
+{'name': '张三', 'age': 18, 'score': 100, 'hobby': '篮球', '111': None}
+>>> dict1.setdefault("222", 222)
+222
+>>> print(dict1)
+{'name': '张三', 'age': 18, 'score': 100, 'hobby': '篮球', '111': None, '222': 2
+22}
+```
 
 
 
@@ -378,7 +422,7 @@ print(dict7)  # {'k1': 'value', 'k2': 'value', 'k3': 'value'}
 ('job', 'programmer')
 ```
 
-若想一个接一个地移除并处理项, 这个方法就非常有效.
+==若想一个接一个地移除并处理项, 这个方法就非常有效.==
 
 ```python
 >>> a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
@@ -413,6 +457,8 @@ print(dict7)  # {'k1': 'value', 'k2': 'value', 'k3': 'value'}
 ```
 
 ## 字典的其他方法
+
+### `copy()`
 
 
 
