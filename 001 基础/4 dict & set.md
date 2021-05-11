@@ -345,35 +345,109 @@ print(dict7)  # {'k1': 'value', 'k2': 'value', 'k3': 'value'}
 
 ## 访问字典元素
 
+```python
+# 定义一个字典
+a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
+```
+
 1. 通过[键]获得“值”。若键不存在，则抛出异常
 
-	
+	```python
+	>>> a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
+	>>> print(a['name'])
+	Lucy
+	>>> print(a['sex'])
+	Traceback (most recent call last):
+	  File "<stdin>", line 1, in <module>
+	KeyError: 'sex'
+	```
 
 2. 通过 `get()`方法获得“值”。优点是: 指定键不存在，返回 None；也可以设定指定键不存在时默认返回的对象。推荐使用`get()`获取“值对象”。
 
-	
+	```python
+	>>> a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
+	>>> print(a.get('sex', '不存在此键'))
+	不存在此键
+	```
 
 3. 列出所有的键值对
 
-	
+	```python
+	>>> for k, v in a.items():
+	...     print(k, v)
+	...
+	name Lucy
+	age 18
+	job programmer
+	```
 
 4. 列出所有的键，列出所有的值
 
-	
+	```python
+	>>> for k in a.keys():
+	...     print(k)
+	...
+	name
+	age
+	job
+	```
 
 5. 检测一个“键”是否在字典中
 
-	
+	```python
+	>>> for v in a.values():
+	...     print(v)
+	...
+	Lucy
+	18
+	programmer
+	```
 
 ## 字典元素添加
 
 给字典新增“键值对”，如果“键”已经存在，则覆盖旧的键值对；如果“键”不存在，则新增”键值对“
 
-
+```python
+>>> a['addr'] = '上海市'
+>>> print(a)
+{'name': 'Lucy', 'age': 18, 'job': 'programmer', 'addr': '上海市'}
+```
 
 ### `update()`
 
+```python
+# 更新，有则覆盖，无则添加
+# 1. 增加键值对
+# 方式一：
+>>> dict9 = {'name': 'lucy', 'age': 18}
+>>> dict9.update(hobby="运动", hight=178)
+>>> print(dict9)
+{'name': 'lucy', 'age': 18, 'hobby': '运动', 'hight': 178}
 
+# 方式二：
+>>> dict10 = {'name': 'lucy', 'age': 18}
+>>> dict10.update([('hobby', '运动'), ('hight', 178)])
+>>> print(dict10)
+{'name': 'lucy', 'age': 18, 'hobby': '运动', 'hight': 178}
+
+>>> dic10 = {'name': 'lucy', 'age': 18}
+>>> dic10.update((('hobby', '运动'), ('hight', 178)))
+>>> print(dict10)
+{'name': 'lucy', 'age': 18, 'hobby': '运动', 'hight': 178}
+
+# 方式三：
+>>> dic11 = {'name': 'lucy', 'age': 18}
+>>> dic12 = {'name': 'tom', 'hight': 178}
+>>> dic11.update(dic12)
+>>> print(dic11)
+{'name': 'tom', 'age': 18, 'hight': 178}
+
+# 2. 修改键所对应的值
+>>> dict13 = {'name': 'lucy', 'age': 18}
+>>> dict13.update(name='tom')
+>>> print(dict13)
+{'name': 'tom', 'age': 18}
+```
 
 ### `setdefault(key, default)`
 
@@ -393,8 +467,6 @@ print(dict7)  # {'k1': 'value', 'k2': 'value', 'k3': 'value'}
 {'name': '张三', 'age': 18, 'score': 100, 'hobby': '篮球', '111': None, '222': 2
 22}
 ```
-
-
 
 ## 字典元素删除
 
