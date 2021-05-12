@@ -532,6 +532,47 @@ a = {'name': 'Lucy', 'age': 18, 'job': 'programmer'}
 
 ### `copy()`
 
+```python
+>>> import copy
+>>> dict4 = {"name": "张三", "age": 18, "score": 100, "hobby": "篮球"}
+>>> print(dict4)
+{'name': '张三', 'age': 18, 'score': 100, 'hobby': '篮球'}
+>>> dict5 = dict4.copy()
+>>> dict4['name'] = 'jack'
+>>> print(dict4)
+{'name': 'jack', 'age': 18, 'score': 100, 'hobby': '篮球'}
+>>> print(dict5)
+{'name': '张三', 'age': 18, 'score': 100, 'hobby': '篮球'}
+>>> print(dict5 is dict4)
+False
+```
+
+思考问题：列表和字典的拷贝
+
+```python
+>>> list1 = [1, 2, 3, {"name": "张三", "age": 18}]
+>>> list2 = list1.copy()
+>>> list1[-1]['age'] = 20
+>>> print(list2)
+[1, 2, 3, {'name': '张三', 'age': 20}]	# 浅拷贝只
+
+
+>>> list1 = [1, 2, 3, {"name": "张三", "age": 18}]
+>>> list2 = copy.deepcopy(list1)
+>>> list1[-1]['age'] = 20
+>>> print(list2)
+[1, 2, 3, {'name': '张三', 'age': 18}]
+
+
+>>> dict4 = {"hobby": ["篮球"]}
+>>> print(dict4)
+{'hobby': ['篮球']}
+>>> dict5 = dict4.copy()
+>>> dict4['hobby'].append('足球')
+>>> print(dict5)
+{'hobby': ['篮球', '足球']}
+```
+
 
 
 ## 序列解包（拆包）
