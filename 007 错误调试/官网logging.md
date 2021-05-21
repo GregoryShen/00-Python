@@ -46,7 +46,7 @@ If you type these lines into a script and run it, you’ll see:
 WARNING:root:Watch out!
 ```
 
-printed out on the console. The `INFO` message doesn’t appear because the default level is `WARNING`. The printed message includes the indication of the level and the description of the event provided in the logging call, i.e. ‘Watch out!’. Don’t worry about the ‘root’ part for now: it will be explained later. The acutal output can be formatted quite flexibly if you need that; formatting options will also be explained later.
+printed out on the console. The `INFO` message doesn’t appear because the default level is `WARNING`. The printed message includes the indication of the level and the description of the event provided in the logging call, i.e. ‘Watch out!’. Don’t worry about the ‘root’ part for now: it will be explained later. The actual output can be formatted quite flexibly if you need that; formatting options will also be explained later.
 
 ### Logging to a file
 
@@ -327,7 +327,7 @@ Programmers can configure logging in three ways:
 2. Creating a logging config file and reading it using `fileConfig()` function.
 3. Creating a dictionary of configuration information and passing it to the `dictConfig()` function.
 
-For the reference documentation on the last two options, see Configuration functions. The following example configures a very simple logger, a console handler, and a simple formatter using Python code:
+For the reference documentation on the last two options, see <u>Configuration functions</u>. The following example configures a very simple logger, a console handler, and a simple formatter using Python code:
 
 ```python
 import logging
@@ -581,6 +581,124 @@ There are other optimizations which can be made for specific applications which 
 | Process information.                          | Set `logging.logProcesses` to 0                              |
 
 Also note that the core logging module only includes the basic handlers. If you don’t import `logging.handlers` and `logging.config`, they won’t take up any memory.
+
+# `logging.config` - Logging configuration
+
+Source code: `Lib/logging/config.py`
+
+## Configuration functions
+
+The following functions configure the logging module. They are located in the `logging.config` module. Their use is optional — you can configure the logging module using these functions or by making calls to the main API(defined in logging itself) and defining handlers which are declared either in logging or `logging.handlers`.
+
+### `logging.config.dictConfig(config)`
+
+
+
+### `logging.config.fileConfig(fname, defaults=None, disable_existing_loggers=True)`
+
+
+
+### `logging.config.listen(port=DEFAULT_LOGGING_CONFIG_PORT, verify=None)`
+
+
+
+### `logging.config.stopListening()`
+
+
+
+## configuration dictionary schema
+
+### Dictionary Schema Details
+
+### Incremental Configuration
+
+### Object connections
+
+### User-defined objects
+
+### Access to external objects
+
+### Access to internal objects
+
+### Import resolution and custom importers
+
+## Configuration file format
+
+
+
+# Logging Cookbook
+
+## Using logging in multiple modules
+
+## Logging from multiple threads
+
+## Multiple handlers and formatters
+
+## Logging to multiple destinations
+
+## Configuration server example
+
+## Dealing with handlers that block
+
+## Sending and receiving logging events across a network
+
+## Adding contextual information to your logging output
+
+### Using LoggerAdapters to impart contextual information
+
+#### Using objects other than dicts to pass contextual information
+
+### Using Filters to impart contextual information
+
+## Logging to a single file from multiple processes
+
+### using `concurrent.futures.ProcessPoolExecutor`
+
+## Using file rotation
+
+## Use of alternative formatting styles
+
+## Customizing LogRecord
+
+## Subclassing QueueHandler - a ZeroMQ example
+
+## Subclassing QueueListener - a ZeroMQ example
+
+## An example dictionary-based configuration
+
+## Using a rotator and namer to customize log rotation processing
+
+## A more elaborate multiprocessing example
+
+## Inserting a BOM into messages sent to a SysLogHandler
+
+## Implementing structured logging
+
+## Customizing handlers with `dictConfig()`
+
+## Using particular formatting styles throughout your application
+
+### Using LogRecord factories
+
+### using custom message objects
+
+## Configuring filters with `dictConfig()`
+
+## Customized exception formatting
+
+## Speaking logging messages
+
+## Buffering logging messages and outputting them conditionally
+
+## Formatting times using UTC(GMT) via configuration
+
+## Using a context manager for selective logging
+
+## A CLI application starter template
+
+## A Qt GUI for logging
+
+
 
 [^1]: verb.宣传；传播；使普及;繁殖，培植（植物）
 
