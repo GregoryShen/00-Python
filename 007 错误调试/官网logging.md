@@ -582,7 +582,7 @@ There are other optimizations which can be made for specific applications which 
 
 Also note that the core logging module only includes the basic handlers. If you don’t import `logging.handlers` and `logging.config`, they won’t take up any memory.
 
-# `logging.config` - Logging configuration
+# [`logging.config` - Logging configuration](https://docs.python.org/3.8/library/logging.config.html#module-logging.config)
 
 Source code: `Lib/logging/config.py`
 
@@ -626,17 +626,31 @@ The following functions configure the logging module. They are located in the `l
 
 
 
-# Logging Cookbook
+# [Logging Cookbook](https://docs.python.org/3.8/howto/logging-cookbook.html)
+
+This page contains a number of recipes related to logging, which have been found useful in the past.
 
 ## Using logging in multiple modules
 
+Multiple calls to `logging.getLogger(‘someLogger’)` return a reference to the same logger object. This is true not only within the same module, but also across modules as long as it is in the same Python interpreter process. It is true for references to the same object; additionally, application code can define and configure a parent logger in one module and create (but not configure) a child logger in a separate module, and all logger calls to the child will pass up to the parent. Here is a main module:
+
+
+
 ## Logging from multiple threads
+
+
 
 ## Multiple handlers and formatters
 
+
+
 ## Logging to multiple destinations
 
+
+
 ## Configuration server example
+
+
 
 ## Dealing with handlers that block
 
@@ -656,7 +670,54 @@ The following functions configure the logging module. They are located in the `l
 
 ## Using file rotation
 
+Sometimes you want to let a log file grow to a certain size, then open a new file and log to that. You may want to keep a certain number of these files, and when that many files have been created, rotate the files so that the number of files and the size of the files both remain bounded. For this usage pattern, the logging package provides a `RotatingFileHandler`:
+
+```python
+import glob
+import logging
+import logging.handlers
+
+LOG_FILENAME = 'logging_rotatingfile_example.out'
+
+# Set up a specific logger with our desired output level
+my_logger = logging.getLogger('MyLogger')
+my_logger.setLevel(logging.DEBUG)
+
+# Add the log message handler to the logger
+handler = logging.handlers.RotatingFileHandler(
+    			LOG_FILENAME, maxBytes=20, backupCount=5)
+
+my_logger.addHandler(handler)
+
+# Log some messages
+for i in range(20):
+    my_logger.debug('i = %d' % i)
+
+# See what files are created
+logfiles = glob.glob('%s*' % LOG_FILENAME)
+
+for filename in logfiles:
+    print(filename)
+```
+
+The result should be 6 separate files, each with part of the log history for the application:
+
+```ini
+logging_rotatingfile_example.out
+logging_rotatingfile_example.out.1
+logging_rotatingfile_example.out.2
+logging_rotatingfile_example.out.3
+logging_rotatingfile_example.out.4
+logging_rotatingfile_example.out.5
+```
+
+The most current file is always `logging_rotating_example.out`, and each time it reaches the size limit it is renamed with the suffix `.1`. Each of the existing backup files is renamed to increment the suffix (`.1` becomes `.2`, etc) and the `.6` file is erased.
+
+Obviously this example sets the log length much too small as an extreme example. You would want to set `maxBytes` to an appropriate value.
+
 ## Use of alternative formatting styles
+
+
 
 ## Customizing LogRecord
 
