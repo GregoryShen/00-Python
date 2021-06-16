@@ -201,7 +201,7 @@ all 和 any 也是内置的guiyue
 
 ### 第 7 章 函数装饰器和闭包
 
-有很多人抱怨，把这个特性命名为“装饰器”不好。主要原因是，这个名称与 GoF 书[^2]使用的不一致。装饰器这个名称可能更适合在编译器领域使用，因为它会遍历并注解语法树。
+有很多人抱怨，把这个特性命名为“装饰器”不好。主要原因是，这个名称与 GoF 书[^7-1]使用的不一致。装饰器这个名称可能更适合在编译器领域使用，因为它会遍历并注解语法树。
 
 ​																	    —“PEP 318 — Decorators for functions and Methods”
 
@@ -226,11 +226,85 @@ nonlocal 是新近出现的保留关键字，在 Python 3.0 中引入。作为 P
 
 下面将首先介绍装饰器的基础知识，然后再讨论上面列出的各个话题。
 
+#### 7.1 装饰器基础知识
+
+装饰器是可调用的对象，其参数是另一个函数（被装饰的函数）。[^7-2] 装饰器可能会处理被装饰的函数，然后把它返回，或者将其替换成另一个函数或可调用对象。
+
+假如有个名为 decorate 的装饰器：
+
+```python
+@decorate
+def target():
+    print('running target()')
+```
+
+上述代码的效果与下述写法一样：
+
+```python
+def target():
+    print('running target()')
+    
+target = decorate(target)
+```
+
+两种写法的最终结果一样：上述两个代码片段执行完毕后得到的 target 不一定是原来那个 target 函数，而是 decorate(target) 返回的函数。
+
+为了确认被装饰的函数会被替换，请看示例 7-1 中的控制台会话。
+
+示例 7-1 装饰器通常把函数替换成另一个函数
+
+```python
+In [6]: def deco(func):
+   ...:     def inner():
+   ...:         print('running inner()')
+   ...:     return inner	# deco 返回 inner 函数对象
+   ...:
+
+In [7]: @deco
+   ...: def target():		# 使用 deco 装饰 target
+   ...:     print('running target()')
+   ...:
+
+In [8]: target()		# 调用被装饰的 target 其实会运行 inner
+running inner()
+
+In [9]: target		# 审查对象，发现 target 现在是 inner 的引用
+Out[9]: <function __main__.deco.<locals>.inner()>
+```
+
+严格来说，装饰器只是语法糖。如前所示，装饰器可以像常规的可调用对象那样调用，其参数是另一个函数。有时，这样做更方便，尤其是做元编程（在运行时改变程序的行为）时。
+
+综上，装饰器的一大特性是，能把被装饰的函数替换成其他函数。第二个特性是，装饰器在加载模块时立即执行，下一节会说明。
+
+#### 7.2 Python 何时执行装饰器
+
+装饰器的一个关键特性是，它们在被装饰的函数定义之后立即运行。这通常是在导入时（即 Python 加载模块时）。如示例 7-2 中的 registration.py 模块所示。
+
+示例 7-2 registration.py 模块
+
+```python
+```
+
+注意，register 在模块中其他函数之前运行（两次）。调用 register 时，传给它的参数是被装饰的函数，例如 <function f1 at  0x0000000005DD21F0>。
+
+加载模块后，registry 中有两个被装饰函数的引用：f1 和 f2。这两个函数，以及 f3，只在 main 明确调用它们时才执行。
+
+如果导入 registration.py 模块，不作为脚本运行，输出如下：
+
+```python
+>>> import registration
+
+```
+
+此时查看 registry 的值，得到的输出如下：
+
+```python
+>>> registration.registry
+```
+
+示例 7-2 主要想强调，函数装饰器在导入模块时立即执行，而被装饰的函数只在明确调用时运行。这突出了 Python 程序员所说的导入时和运行时之间的区别。
 
 
-7.1 装饰器基础知识
-
-7.2 Python 何时执行装饰器
 
 7.3 使用装饰器改进“策略”模式
 
@@ -588,7 +662,8 @@ Out[36]: 'bar'
 
 
 
-[^2]: 指 1995 年出版的英文原版《设计模式：可复用面向对象软件的基础》，作者是四个人，人们称之为“四人组”（Gang of Four)
+[^7-1]: 指 1995 年出版的英文原版《设计模式：可复用面向对象软件的基础》，作者是四个人，人们称之为“四人组”（Gang of Four)
+[^7-2]: Python 也支持类装饰器，参见第 21 章
 [^5]: 本书的技术审校之一 Leonardo Rochael 不同意我对 staticmethod 的见解，作为反驳，他推荐阅读 Julien Danjou 写的一篇博客文章，题为“[The Definitive Guide on How to Use Static, Class or Abstract Methods in Python](https://julien.danjou.info/guide-python-static-class-abstract-methods/)”. Danjou 的这篇文章写的很好，但是我对 staticmethod 的观点依然不变，请读者自辨。
 [^12]: 摘自华尔街日报的文章，“[Birth of a Salesman](https://www.wsj.com/articles/SB10001424052970203914304576627102996831200)”(2011 年 10 月 15 日)，这是 Jeff Bezos 的原话。
 
