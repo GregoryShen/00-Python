@@ -213,7 +213,7 @@ nonlocal 是新近出现的保留关键字，在 Python 3.0 中引入。作为 P
 
 本章的最终目标是解释清楚函数装饰器的工作原理，包括最简单的注册装饰器和较复杂的参数化装饰器。但是，在实现这一目标之前，我们要讨论下述话题：
 
-* Python 是如何计算装饰器句法
+* Python 是如何计算装饰器句法（How Python evaluates decorator syntax）
 * Python 如何判断变量是不是局部的
 * 闭包存在的原因和工作原理
 * nonlocal 能解决什么问题
@@ -228,7 +228,7 @@ nonlocal 是新近出现的保留关键字，在 Python 3.0 中引入。作为 P
 
 #### 7.1 装饰器基础知识
 
-装饰器是可调用的对象，其参数是另一个函数（被装饰的函数）。[^7-2] 装饰器可能会处理被装饰的函数，然后把它返回，或者将其替换成另一个函数或可调用对象。
+==装饰器是可调用的对象，其参数是另一个函数（被装饰的函数）[^7-2]。 装饰器可能会处理被装饰的函数，然后把它返回，或者将其替换成另一个函数或可调用对象。==
 
 假如有个名为 decorate 的装饰器：
 
@@ -274,7 +274,7 @@ Out[9]: <function __main__.deco.<locals>.inner()>
 
 严格来说，装饰器只是语法糖。如前所示，装饰器可以像常规的可调用对象那样调用，其参数是另一个函数。有时，这样做更方便，尤其是做元编程（在运行时改变程序的行为）时。
 
-综上，装饰器的一大特性是，能把被装饰的函数替换成其他函数。第二个特性是，装饰器在加载模块时立即执行，下一节会说明。
+综上，装饰器的一大特性是，==能把被装饰的函数替换成其他函数==。第二个特性是，==装饰器在加载模块时立即执行==，下一节会说明。
 
 #### 7.2 Python 何时执行装饰器
 
@@ -283,6 +283,52 @@ Out[9]: <function __main__.deco.<locals>.inner()>
 示例 7-2 registration.py 模块
 
 ```python
+registry = []  # registry 保存被 @register 装饰的函数引用
+
+
+def register(func):  # register 的参数是一个函数
+    print(f'running register({func})')  # 为了演示，显示被装饰的函数
+    registry.append(func)   # 把 func 存入 registry
+    return func  # 返回 func: 必须返回函数；这里返回的函数与通过参数传入的一样
+
+
+@register   # f1 和 f2 被 @register 装饰
+def f1():
+    print('running f1()')
+
+
+@register
+def f2():
+    print('running f2()')
+
+
+def f3():   # f3 没有装饰
+    print('running f3()')
+
+
+def main():  # main 显示 registry, 然后调用 f1()、f2() 和 f3()
+    print('running main()')
+    print('registry ->', registry)
+    f1()
+    f2()
+    f3()
+
+
+if __name__ == '__main__':
+    main()  # 只有把 registration.py 当作脚本运行时才调用 main()
+```
+
+把 registration.py 当作脚本运行得到的输出如下：
+
+```shell
+$ python registration.py
+running register(<function f1 at 0x10a40f4c0>)
+running register(<function f2 at 0x10a40f550>)
+running main()
+registry -> [<function f1 at 0x10a40f4c0>, <function f2 at 0x10a40f550>]
+running f1(
+running f2()
+running f3()
 ```
 
 注意，register 在模块中其他函数之前运行（两次）。调用 register 时，传给它的参数是被装饰的函数，例如 <function f1 at  0x0000000005DD21F0>。
@@ -293,46 +339,81 @@ Out[9]: <function __main__.deco.<locals>.inner()>
 
 ```python
 >>> import registration
-
+running register(<function f1 at 0x10ffd3dc0>)
+running register(<function f2 at 0x10ffd3d30>)
 ```
 
 此时查看 registry 的值，得到的输出如下：
 
 ```python
 >>> registration.registry
+[<function f1 at 0x10ffd3dc0>, <function f2 at 0x10ffd3d30>]
 ```
 
 示例 7-2 主要想强调，函数装饰器在导入模块时立即执行，而被装饰的函数只在明确调用时运行。这突出了 Python 程序员所说的导入时和运行时之间的区别。
 
+考虑到装饰器在真实代码中的常用方式，示例 7-2 有两个不寻常的地方。
+
+* 装饰器函数与被装饰的函数在同一个模块中定义。实际情况是，装饰器通常在一个模块中定义，然后应用到其他模块的函数上。
+* register 装饰器返回的函数与与通过参数传入的相同。实际上，大多数装饰器会在内部定义一个函数，然后将其返回。
+
+虽然示例 7-2 中的 register 装饰器原封不动地返回被装饰的函数，但是这种技术并非没有用处。很多 Python Web 框架使用这样的装饰器把函数添加到某种中央注册处，例如把 URL 模式映射到生成 HTTP 响应的函数上的注册处。这种注册装饰器可能会也可能不会修改被装饰的函数。下一节会举例说明。
+
+#### 7.3 使用装饰器改进“策略”模式
+
+使用注册装饰器可以改进
+
+#### 7.4 变量作用域规则
 
 
-7.3 使用装饰器改进“策略”模式
 
-7.4 变量作用域规则
+#### 7.5 闭包
 
-7.5 闭包
 
-7.6 nonlocal 声明
 
-7.7 实现一个简单的装饰器
+#### 7.6 nonlocal 声明
 
-7.8 标准库中的装饰器
 
-7.8.1 使用 functools.lru_cache 做备忘
 
-7.8.2 单分派泛函数
+#### 7.7 实现一个简单的装饰器
+
+
+
+#### 7.8 标准库中的装饰器
+
+
+
+##### 7.8.1 使用 functools.lru_cache 做备忘
+
+
+
+##### 7.8.2 单分派泛函数
+
+
 
 7.9 叠放装饰器
 
+
+
 7.10 参数化装饰器
+
+
 
 7.10.1 一个参数化的注册装饰器
 
+
+
 7.10.2 参数化 clock 装饰器
+
+
 
 7.11 本章小结
 
+
+
 7.12 延伸阅读
+
+
 
 ## 第四部分 面向对象惯用法
 
