@@ -158,11 +158,74 @@ def b(x, *args, y, **kwargs):
 
 #### 解决方案
 
+任何时候你定义装饰器的时候，都应该使用 functools 库中的 @wraps 装饰器来注解底层包装函数。例如：
 
+```python
+In [1]: import time
+In [2]: from functools import wraps
+In [3]: def timethis(func):
+   ...:     '''
+   ...:     Decorator that reports the execution time.
+   ...:     '''
+   ...:     @wraps(func)
+   ...:     def wrapper(*args, **kwargs):
+   ...:         start = time.time()
+   ...:         result = func(*args, **kwargs)
+   ...:         end = time.time()
+   ...:         print(func.__name__, end-start)
+   ...:         return result
+   ...:     return wrapper
+```
+
+下面我们使用这个被包装后的函数并检查它的元信息：
+
+```python
+In [4]: @timethis
+   ...: def countdown(n):
+   ...:     '''
+   ...:     Counts down
+   ...:     '''
+   ...:     while n > 0:
+   ...:         n -= 1
+   ...:
+In [5]: countdown(10000)
+countdown 0.0009999275207519531
+In [6]: countdown.__name__
+Out[6]: 'countdown'
+In [7]: countdown.__doc__
+Out[7]: '\n    Counts down\n    '
+In [9]: countdown.__annotations__
+Out[9]: {}
+```
 
 #### 讨论
 
+在编写装饰器的时候复制元信息是一个非常重要的部分。如果你忘记了使用@wraps，那么你会发现被装饰函数丢失了所有有用的信息。比如如果忽略@wraps后的效果是下面这样的：
 
+```python
+>>> countdown.__name__
+'wrapper'
+>>> countdown.__doc__
+>>> countdown.__annotations__
+{}
+>>>
+```
+
+@wraps 有一个重要特征是它能让你通过属性`__wrapped__`直接访问被包装函数。例如：
+
+```python
+In [10]: countdown.__wrapped__(1000000)
+```
+
+`__wrapped__` 属性还能让被装饰函数正确暴露底层的参数签名信息。例如：
+
+```python
+In [11]: from inspect import signature
+In [12]: print(signature(countdown))
+(n)
+```
+
+一个很普遍的问题是怎样让装饰器去直接复制原始函数的参数签名信息，如果想自己动手实现的话需要做大量的工作，最好就简单地使用@wraps 装饰器。通过底层的`__wrapped__`属性访问到函数签名信息。
 
 ### 9.3 解除一个装饰器
 
@@ -190,11 +253,85 @@ def b(x, *args, y, **kwargs):
 
 #### 问题
 
-
+你想写一个装饰器来包装一个函数，并且允许用户提供参数在运行时控制装饰器行为。
 
 #### 解决方案
 
+引入一个访问函数，使用 nonlocal 来修改内部变量。然后这个访问函数被作为一个属性赋值给包装函数。
 
+```python
+In [14]: from functools import wraps, partial
+In [15]: import logging
+
+# utility decorator to attach a function as an attribute of obj
+In [16]: def attach_wrapper(obj, func=None):
+    ...:     if func is None:
+    ...:         return partial(attach_wrapper, obj)
+    ...:     setattr(obj, func.__name__, func)
+    ...:     return func
+    ...:
+
+In [17]: def logged(level, name=None, message=None):
+    ...:     '''
+    ...:     Add logging to a function, level is the logging
+    ...:     level, name is the logger name, and message is the
+    ...:     log message. If name and message aren't specified,
+    ...:     they defalt to the function's module and name.
+    ...:     '''
+    ...:     def decorate(func):
+    ...:         logname = name if name else func.__module__
+    ...:         log = logging.getLogger(logname)
+    ...:         logmsg = message if message else func.__name__
+        
+    ...:         @wraps(func)
+    ...:         def wrapper(*args, **kwargs):
+    ...:             log.log(level, logmsg)
+    ...:             return func(*args, **kwargs)
+    			
+        		 # Attach setter functions
+    ...:         @attach_wrapper(wrapper)
+    ...:         def set_level(newlevel):
+    ...:             nonlocal level
+    ...:             level = newlevel
+        
+    ...:         @attach_wrapper(wrapper)
+    ...:         def set_message(newmsg):
+    ...:             nonlocal logmsg
+    ...:             logmsg = newmsg
+    ...:         return wrapper
+    ...:     return decorate
+    ...:
+
+# Example use
+In [18]: @logged(logging.DEBUG)
+    ...: def add(x, y):
+    ...:     return x + y
+    ...:
+
+In [19]: @logged(logging.CRITICAL, 'example')
+    ...: def spam():
+    ...:     print('Spam!')
+```
+
+下面是交互环境下的使用例子：
+
+```python
+In [19]: import logging
+In [20]: logging.basicConfig(level=logging.DEBUG)
+In [21]: add(2, 3)
+DEBUG:__main__:add
+Out[21]: 5
+# Change the log message
+In [22]: add.set_message('Add called')
+In [23]: add(2, 3)
+DEBUG:__main__:Add called
+Out[23]: 5
+# Change the log level
+In [25]: add.set_level(logging.WARNING)
+In [26]: add(2, 3)
+WARNING:__main__:Add called
+Out[26]: 5
+```
 
 #### 讨论
 
